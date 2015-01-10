@@ -19,7 +19,7 @@
  * - wrap          - integer (80)
  * - wrap_char     - string ("\n")
  * - indent_char   - string (" ")
- * - wrap_boundary - boolean (true)
+ * - wrap_boundary - bool (true)
  * </pre>
  *
  * @link   http://www.smarty.net/manual/en/language.function.textformat.php {textformat}
@@ -28,7 +28,7 @@
  * @param array                    $params   parameters
  * @param string                   $content  contents of the block
  * @param Smarty_Internal_Template $template template object
- * @param boolean                  &$repeat  repeat flag
+ * @param bool                  &$repeat  repeat flag
  *
  * @return string content re-formatted
  * @author Monte Ohrt <monte at ohrt dot com>

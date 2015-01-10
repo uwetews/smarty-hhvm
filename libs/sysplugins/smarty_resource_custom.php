@@ -32,7 +32,7 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      *
      * @param  string $name template name
      *
-     * @return integer|boolean timestamp (epoch) the template was modified, or false if not found
+     * @return integer|bool timestamp (epoch) the template was modified, or false if not found
      */
     protected function fetchTimestamp($name)
     {

@@ -145,7 +145,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * force compilation of complete template as nocache
      *
-     * @var boolean
+     * @var bool
      */
     public $forceNocache = false;
 
@@ -275,6 +275,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         }
         $loop = 0;
         // the $this->sources array can get additional elements while compiling by the {extends} tag
+        $_compiled_code = '';
         while ($this->template->source = array_shift($this->sources)) {
             $this->smarty->_current_file = $this->template->source->filepath;
             if ($this->smarty->debugging) {
@@ -288,7 +289,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
             } else {
                 $this->inheritance_child = false;
             }
-            $_compiled_code = '';
             do {
                 $_compiled_code = '';
                 // flag for aborting current and start recompile
@@ -676,7 +676,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @param  string $tag         name of tag
      * @param  string $plugin_type type of plugin
      *
-     * @return boolean true if found
+     * @return bool true if found
      */
     public function getPluginFromDefaultHandler($tag, $plugin_type)
     {
@@ -724,7 +724,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * into the rendered output.
      *
      * @param  string  $content content of template element
-     * @param  boolean $is_code true if content is compiled code
+     * @param  bool $is_code true if content is compiled code
      *
      * @return string  content
      */

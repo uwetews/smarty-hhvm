@@ -46,7 +46,7 @@ class Smarty_Internal_Data
      *
      * @param  array|string $tpl_var the template variable name(s)
      * @param  mixed        $value   the value to assign
-     * @param  boolean      $nocache if true any output of this variable will be not cached
+     * @param  bool      $nocache if true any output of this variable will be not cached
      *
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
      */
@@ -72,7 +72,7 @@ class Smarty_Internal_Data
      *
      * @param  string  $varname the global variable name
      * @param  mixed   $value   the value to assign
-     * @param  boolean $nocache if true any output of this variable will be not cached
+     * @param  bool $nocache if true any output of this variable will be not cached
      *
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
      */
@@ -95,7 +95,7 @@ class Smarty_Internal_Data
      *
      * @param string   $tpl_var the template variable name
      * @param          $value
-     * @param  boolean $nocache if true any output of this variable will be not cached
+     * @param  bool $nocache if true any output of this variable will be not cached
      *
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
      */
@@ -114,8 +114,8 @@ class Smarty_Internal_Data
      *
      * @param  array|string $tpl_var the template variable name(s)
      * @param  mixed        $value   the value to append
-     * @param  boolean      $merge   flag if array elements shall be merged
-     * @param  boolean      $nocache if true any output of this variable will be not cached
+     * @param  bool      $merge   flag if array elements shall be merged
+     * @param  bool      $nocache if true any output of this variable will be not cached
      *
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
      */
@@ -176,7 +176,7 @@ class Smarty_Internal_Data
      *
      * @param  string  $tpl_var the template variable name
      * @param  mixed   &$value  the referenced value to append
-     * @param  boolean $merge   flag if array elements shall be merged
+     * @param  bool $merge   flag if array elements shall be merged
      *
      * @return Smarty_Internal_Data current Smarty_Internal_Data (or Smarty or Smarty_Internal_Template) instance for chaining
      */
@@ -206,7 +206,7 @@ class Smarty_Internal_Data
      *
      * @param  string  $varname        variable name or null
      * @param  object  $_ptr           optional pointer to data object
-     * @param  boolean $search_parents include parent templates?
+     * @param  bool $search_parents include parent templates?
      *
      * @return string  variable value or or array of variables
      */
@@ -301,7 +301,7 @@ class Smarty_Internal_Data
      *
      * @param  string  $variable       the name of the Smarty variable
      * @param  object  $_ptr           optional pointer to data object
-     * @param  boolean $search_parents search also in parent data
+     * @param  bool $search_parents search also in parent data
      * @param bool     $error_enable
      *
      * @return object  the object of the variable

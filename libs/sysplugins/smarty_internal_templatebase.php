@@ -39,7 +39,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     /**
      * caching enabled
      *
-     * @var boolean
+     * @var bool
      */
     public $caching = false;
     /**
@@ -57,7 +57,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      * @param  mixed         $compile_id compile id to be used with this template
      * @param  object        $parent     next higher level of Smarty variables
      *
-     * @return boolean       cache status
+     * @return bool       cache status
      */
     public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
@@ -121,7 +121,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      * @param  string   $type       plugin type
      * @param  string   $tag        name of template tag
      * @param  callback $callback   PHP callback to register
-     * @param  boolean  $cacheable  if true (default) this fuction is cachable
+     * @param  bool  $cacheable  if true (default) this fuction is cachable
      * @param  array    $cache_attr caching attributes if any
      *
      * @return Smarty_Internal_Templatebase current Smarty_Internal_Templatebase (or Smarty or Smarty_Internal_Template) instance for chaining
@@ -225,7 +225,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
      * @param          $object_name
      * @param  object  $object_impl   the referenced PHP object to register
      * @param  array   $allowed       list of allowed methods (empty = all)
-     * @param  boolean $smarty_args   smarty argument format, else traditional
+     * @param  bool $smarty_args   smarty argument format, else traditional
      * @param  array   $block_methods list of block-methods
      *
      * @throws SmartyException
@@ -251,7 +251,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         }
         // register the object
         $this->smarty->registered_objects[$object_name] =
-            array($object_impl, (array) $allowed, (boolean) $smarty_args, (array) $block_methods);
+            array($object_impl, (array) $allowed, (bool) $smarty_args, (array) $block_methods);
 
         return $this;
     }

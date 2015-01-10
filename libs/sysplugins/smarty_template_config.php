@@ -15,8 +15,8 @@
  * @subpackage TemplateResources
  * @author     Uwe Tews
  * @property integer $timestamp Source Timestamp
- * @property boolean $exists    Source Existence
- * @property boolean $template  Extended Template reference
+ * @property bool $exists    Source Existence
+ * @property bool $template  Extended Template reference
  * @property string  $content   Source Content
  */
 class Smarty_Template_Config extends Smarty_Template_Source

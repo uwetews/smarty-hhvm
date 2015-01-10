@@ -28,14 +28,14 @@ class Smarty_Template_Compiled
     /**
      * Compiled Existence
      *
-     * @var boolean
+     * @var bool
      */
     public $exists = false;
 
     /**
      * Compiled Content Loaded
      *
-     * @var boolean
+     * @var bool
      */
     public $processed = false;
     /**
@@ -242,7 +242,7 @@ class Smarty_Template_Compiled
      * @param Smarty_Internal_Template $_template template object
      * @param string                   $code      compiled code
      *
-     * @return boolean success
+     * @return bool success
      */
     public function write(Smarty_Internal_Template $_template, $code)
     {

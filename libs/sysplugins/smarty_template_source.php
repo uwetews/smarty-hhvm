@@ -8,8 +8,8 @@
  * @subpackage TemplateResources
  * @author     Rodney Rehm
  * @property integer $timestamp Source Timestamp
- * @property boolean $exists    Source Existence
- * @property boolean $template  Extended Template reference
+ * @property bool $exists    Source Existence
+ * @property bool $template  Extended Template reference
  * @property string  $content   Source Content
  */
 class Smarty_Template_Source
@@ -112,14 +112,14 @@ class Smarty_Template_Source
     /**
      * Source is bypassing compiler
      *
-     * @var boolean
+     * @var bool
      */
     public $uncompiled = false;
 
     /**
      * Source must be recompiled on every occasion
      *
-     * @var boolean
+     * @var bool
      */
     public $recompiled = false;
     /**

@@ -20,8 +20,8 @@
  * @param string  $string      input string
  * @param integer $length      length of truncated text
  * @param string  $etc         end string
- * @param boolean $break_words truncate at word boundary
- * @param boolean $middle      truncate in the middle of text
+ * @param bool $break_words truncate at word boundary
+ * @param bool $middle      truncate in the middle of text
  *
  * @return string truncated string
  */

@@ -45,7 +45,7 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
      * @param  object $compiler  compiler object
      * @param  array  $parameter array with compilation parameter
      *
-     * @return boolean true
+     * @return bool true
      */
     public function compile($args, $compiler, $parameter)
     {
@@ -94,7 +94,7 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
      * @param  object $compiler  compiler object
      * @param  array  $parameter array with compilation parameter
      *
-     * @return boolean true
+     * @return bool true
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {

@@ -17,11 +17,11 @@
  * - name      - name of cycle (optional)
  * - values    - comma separated list of values to cycle, or an array of values to cycle
  *               (this can be left out for subsequent calls)
- * - reset     - boolean - resets given var to true
- * - print     - boolean - print var or not. default is true
- * - advance   - boolean - whether or not to advance the cycle
+ * - reset     - bool - resets given var to true
+ * - print     - bool - print var or not. default is true
+ * - advance   - bool - whether or not to advance the cycle
  * - delimiter - the value delimiter, default is ","
- * - assign    - boolean, assigns to template var instead of printed.
+ * - assign    - bool, assigns to template var instead of printed.
  * </pre>
  * Examples:<br>
  * <pre>

@@ -40,21 +40,21 @@ class Smarty_Template_Cached
     /**
      * Source Existence
      *
-     * @var boolean
+     * @var bool
      */
     public $exists = false;
 
     /**
      * Cache Is Valid
      *
-     * @var boolean
+     * @var bool
      */
     public $valid = false;
 
     /**
      * Cache was processed
      *
-     * @var boolean
+     * @var bool
      */
     public $processed = false;
 
@@ -218,7 +218,7 @@ class Smarty_Template_Cached
      * @param Smarty_Internal_Template $_template template object
      * @param string                   $content   content to cache
      *
-     * @return boolean success
+     * @return bool success
      */
     public function write(Smarty_Internal_Template $_template, $content)
     {

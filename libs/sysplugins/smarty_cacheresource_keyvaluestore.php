@@ -85,7 +85,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param  Smarty_Internal_Template $_template template object
      * @param  Smarty_Template_Cached   $cached    cached object
      *
-     * @return boolean                 true or false if the cached content does not exist
+     * @return bool                 true or false if the cached content does not exist
      */
     public function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached = null)
     {
@@ -118,7 +118,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param  Smarty_Internal_Template $_template template object
      * @param  string                   $content   content to cache
      *
-     * @return boolean                  success
+     * @return bool                  success
      */
     public function writeCachedContent(Smarty_Internal_Template $_template, $content)
     {
@@ -258,7 +258,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param  integer &$timestamp    cached timestamp (epoch)
      * @param  string  $resource_uid  resource's uid
      *
-     * @return boolean success
+     * @return bool success
      */
     protected function fetch($cid, $resource_name = null, $cache_id = null, $compile_id = null, &$content = null, &$timestamp = null, $resource_uid = null)
     {
@@ -437,7 +437,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param  Smarty                 $smarty Smarty object
      * @param  Smarty_Template_Cached $cached cached object
      *
-     * @return boolean               true or false if cache is locked
+     * @return bool               true or false if cache is locked
      */
     public function hasLock(Smarty $smarty, Smarty_Template_Cached $cached)
     {
@@ -492,7 +492,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      * @param  array $keys   list of values to save
      * @param  int   $expire expiration time
      *
-     * @return boolean true on success, false on failure
+     * @return bool true on success, false on failure
      */
     abstract protected function write(array $keys, $expire = null);
 
@@ -501,14 +501,14 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @param  array $keys list of keys to delete
      *
-     * @return boolean true on success, false on failure
+     * @return bool true on success, false on failure
      */
     abstract protected function delete(array $keys);
 
     /**
      * Remove *all* values from cache
      *
-     * @return boolean true on success, false on failure
+     * @return bool true on success, false on failure
      */
     protected function purge()
     {

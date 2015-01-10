@@ -39,7 +39,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      * @param  string $cache_id   cache id
      * @param  string $compile_id compile id
      *
-     * @return integer|boolean timestamp (epoch) the template was modified, or false if not found
+     * @return integer|bool timestamp (epoch) the template was modified, or false if not found
      */
     protected function fetchTimestamp($id, $name, $cache_id, $compile_id)
     {
@@ -56,7 +56,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      * @param  integer|null $exp_time   seconds till expiration or null
      * @param  string       $content    content to cache
      *
-     * @return boolean      success
+     * @return bool      success
      */
     abstract protected function save($id, $name, $cache_id, $compile_id, $exp_time, $content);
 
@@ -117,7 +117,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      * @param  Smarty_Internal_Template $_template template object
      * @param  Smarty_Template_Cached   $cached    cached object
      *
-     * @return boolean                 true or false if the cached content does not exist
+     * @return bool                 true or false if the cached content does not exist
      */
     public function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached = null)
     {
@@ -155,7 +155,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      * @param  Smarty_Internal_Template $_template template object
      * @param  string                   $content   content to cache
      *
-     * @return boolean                  success
+     * @return bool                  success
      */
     public function writeCachedContent(Smarty_Internal_Template $_template, $content)
     {
@@ -262,7 +262,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      * @param  Smarty                 $smarty Smarty object
      * @param  Smarty_Template_Cached $cached cached object
      *
-     * @return boolean               true or false if cache is locked
+     * @return bool               true or false if cache is locked
      */
     public function hasLock(Smarty $smarty, Smarty_Template_Cached $cached)
     {

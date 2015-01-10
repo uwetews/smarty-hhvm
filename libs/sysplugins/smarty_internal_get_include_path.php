@@ -20,7 +20,7 @@ class Smarty_Internal_Get_Include_Path
      *
      * @param  string $filepath filepath
      *
-     * @return string|boolean full filepath or false
+     * @return string|bool full filepath or false
      */
     public static function getIncludePath($filepath)
     {

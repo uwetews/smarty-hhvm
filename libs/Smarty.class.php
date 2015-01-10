@@ -201,19 +201,19 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * auto literal on delimiters with whitspace
      *
-     * @var boolean
+     * @var bool
      */
     public $auto_literal = true;
     /**
      * display error on not assigned variables
      *
-     * @var boolean
+     * @var bool
      */
     public $error_unassigned = false;
     /**
      * look up relative filepaths in include_path
      *
-     * @var boolean
+     * @var bool
      */
     public $use_include_path = false;
     /**
@@ -279,43 +279,43 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * force template compiling?
      *
-     * @var boolean
+     * @var bool
      */
     public $force_compile = false;
     /**
      * check template for modifications?
      *
-     * @var boolean
+     * @var bool
      */
     public $compile_check = true;
     /**
      * use sub dirs for compiled/cached files?
      *
-     * @var boolean
+     * @var bool
      */
     public $use_sub_dirs = false;
     /**
      * allow ambiguous resources (that are made unique by the resource handler)
      *
-     * @var boolean
+     * @var bool
      */
     public $allow_ambiguous_resources = false;
     /**
      * merge compiled includes
      *
-     * @var boolean
+     * @var bool
      */
     public $merge_compiled_includes = false;
     /**
      * template inheritance merge compiled includes
      *
-     * @var boolean
+     * @var bool
      */
     public $inheritance_merge_compiled_includes = true;
     /**
      * force cache file creation
      *
-     * @var boolean
+     * @var bool
      */
     public $force_cache = false;
     /**
@@ -365,7 +365,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * Currently used by Smarty_Internal_Template only.
      * }}
      *
-     * @var boolean
+     * @var bool
      */
     public $direct_access_security = true;
     /**#@-*/
@@ -373,7 +373,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * debug mode
      * Setting this to true enables the debug-console.
      *
-     * @var boolean
+     * @var bool
      */
     public $debugging = false;
     /**
@@ -410,7 +410,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * Internal flag for getTags()
      *
-     * @var boolean
+     * @var bool
      */
     public $get_used_tags = false;
 
@@ -421,19 +421,19 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * Controls whether variables with the same name overwrite each other.
      *
-     * @var boolean
+     * @var bool
      */
     public $config_overwrite = true;
     /**
      * Controls whether config values of on/true/yes and off/false/no get converted to boolean.
      *
-     * @var boolean
+     * @var bool
      */
     public $config_booleanize = true;
     /**
      * Controls whether hidden config sections/vars are read from the file.
      *
-     * @var boolean
+     * @var bool
      */
     public $config_read_hidden = false;
 
@@ -446,13 +446,13 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * locking concurrent compiles
      *
-     * @var boolean
+     * @var bool
      */
     public $compile_locking = true;
     /**
      * Controls whether cache resources should emply locking mechanism
      *
-     * @var boolean
+     * @var bool
      */
     public $cache_locking = false;
     /**
@@ -518,7 +518,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * check If-Modified-Since headers
      *
-     * @var boolean
+     * @var bool
      */
     public $cache_modified_check = false;
     /**
@@ -590,7 +590,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * autoescape variable output
      *
-     * @var boolean
+     * @var bool
      */
     public $escape_html = false;
     /**
@@ -743,7 +743,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      *
      * @param  string $resource_name template name
      *
-     * @return boolean status
+     * @return bool status
      */
     public function templateExists($resource_name)
     {
@@ -1244,7 +1244,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @param  mixed   $cache_id   cache id to be used with this template
      * @param  mixed   $compile_id compile id to be used with this template
      * @param  object  $parent     next higher level of Smarty variables
-     * @param  boolean $do_clone   flag is Smarty object shall be cloned
+     * @param  bool $do_clone   flag is Smarty object shall be cloned
      *
      * @return object  template object
      */
@@ -1302,7 +1302,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @param  bool   $check       check if already loaded
      *
      * @throws SmartyException
-     * @return string |boolean filepath of loaded file or false
+     * @return string |bool filepath of loaded file or false
      */
     public function loadPlugin($plugin_name, $check = true)
     {
@@ -1424,7 +1424,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      *
      * @param  array $errors Array to write errors into, rather than outputting them
      *
-     * @return boolean true if setup is fine, false if something is wrong
+     * @return bool true if setup is fine, false if something is wrong
      */
     public function testInstall(&$errors = null)
     {
@@ -1432,7 +1432,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $compile_check
+     * @param bool $compile_check
      */
     public function setCompileCheck($compile_check)
     {
@@ -1440,7 +1440,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $use_sub_dirs
+     * @param bool $use_sub_dirs
      */
     public function setUseSubDirs($use_sub_dirs)
     {
@@ -1448,7 +1448,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $caching
+     * @param bool $caching
      */
     public function setCaching($caching)
     {
@@ -1488,7 +1488,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $escape_html
+     * @param bool $escape_html
      */
     public function setEscapeHtml($escape_html)
     {
@@ -1496,7 +1496,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $auto_literal
+     * @param bool $auto_literal
      */
     public function setAutoLiteral($auto_literal)
     {
@@ -1504,7 +1504,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $merge_compiled_includes
+     * @param bool $merge_compiled_includes
      */
     public function setMergeCompiledIncludes($merge_compiled_includes)
     {
@@ -1528,7 +1528,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $debugging
+     * @param bool $debugging
      */
     public function setDebugging($debugging)
     {
@@ -1536,7 +1536,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $config_overwrite
+     * @param bool $config_overwrite
      */
     public function setConfigOverwrite($config_overwrite)
     {
@@ -1544,7 +1544,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $config_booleanize
+     * @param bool $config_booleanize
      */
     public function setConfigBooleanize($config_booleanize)
     {
@@ -1552,7 +1552,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $config_read_hidden
+     * @param bool $config_read_hidden
      */
     public function setConfigReadHidden($config_read_hidden)
     {
@@ -1560,7 +1560,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     }
 
     /**
-     * @param boolean $compile_locking
+     * @param bool $compile_locking
      */
     public function setCompileLocking($compile_locking)
     {
@@ -1645,7 +1645,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @param          $errline
      * @param          $errcontext
      *
-     * @return boolean
+     * @return bool
      */
     public static function mutingErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {

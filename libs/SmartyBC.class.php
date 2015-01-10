@@ -72,7 +72,7 @@ class SmartyBC extends Smarty
      *
      * @param string  $tpl_var the template variable name
      * @param mixed   &$value  the referenced value to append
-     * @param boolean $merge   flag if array elements shall be merged
+     * @param bool $merge   flag if array elements shall be merged
      */
     public function append_by_ref($tpl_var, &$value, $merge = false)
     {
@@ -118,7 +118,7 @@ class SmartyBC extends Smarty
      * @param string  $object      name of template object
      * @param object  $object_impl the referenced PHP object to register
      * @param array   $allowed     list of allowed methods (empty = all)
-     * @param boolean $smarty_args smarty argument format, else traditional
+     * @param bool $smarty_args smarty argument format, else traditional
      * @param array   $block_methods list of methods that are block format
      *
      * @throws SmartyException
@@ -127,7 +127,7 @@ class SmartyBC extends Smarty
     public function register_object($object, $object_impl, $allowed = array(), $smarty_args = true, $block_methods = array())
     {
         settype($allowed, 'array');
-        settype($smarty_args, 'boolean');
+        settype($smarty_args, 'bool');
         $this->registerObject($object, $object_impl, $allowed, $smarty_args, $block_methods);
     }
 
@@ -310,7 +310,7 @@ class SmartyBC extends Smarty
      * @param  string $compile_id name of compile_id
      * @param  string $exp_time   expiration time
      *
-     * @return boolean
+     * @return bool
      */
     public function clear_cache($tpl_file = null, $cache_id = null, $compile_id = null, $exp_time = null)
     {
@@ -322,7 +322,7 @@ class SmartyBC extends Smarty
      *
      * @param  string $exp_time expire time
      *
-     * @return boolean
+     * @return bool
      */
     public function clear_all_cache($exp_time = null)
     {
@@ -336,7 +336,7 @@ class SmartyBC extends Smarty
      * @param  string $cache_id
      * @param  string $compile_id
      *
-     * @return boolean
+     * @return bool
      */
     public function is_cached($tpl_file, $cache_id = null, $compile_id = null)
     {
@@ -360,7 +360,7 @@ class SmartyBC extends Smarty
      * @param  string $compile_id
      * @param  string $exp_time
      *
-     * @return boolean results of {@link smarty_core_rm_auto()}
+     * @return bool results of {@link smarty_core_rm_auto()}
      */
     public function clear_compiled_tpl($tpl_file = null, $compile_id = null, $exp_time = null)
     {
@@ -372,7 +372,7 @@ class SmartyBC extends Smarty
      *
      * @param  string $tpl_file
      *
-     * @return boolean
+     * @return bool
      */
     public function template_exists($tpl_file)
     {
@@ -455,7 +455,7 @@ class SmartyBC extends Smarty
  * @param array   $params   parameter list
  * @param string  $content  contents of the block
  * @param object  $template template object
- * @param boolean &$repeat  repeat flag
+ * @param bool &$repeat  repeat flag
  *
  * @return string content re-formatted
  */

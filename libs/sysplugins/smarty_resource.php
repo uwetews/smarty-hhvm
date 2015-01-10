@@ -19,14 +19,14 @@ abstract class Smarty_Resource
     /**
      * Source is bypassing compiler
      *
-     * @var boolean
+     * @var bool
      */
     public $uncompiled = false;
 
     /**
      * Source must be recompiled on every occasion
      *
-     * @var boolean
+     * @var bool
      */
     public $recompiled = false;
     /**
@@ -116,7 +116,7 @@ abstract class Smarty_Resource
      *
      * @param  Smarty  $smarty        Smarty instance
      * @param  string  $resource_name resource_name to make unique
-     * @param  boolean $isConfig      flag for config resource
+     * @param  bool $isConfig      flag for config resource
      *
      * @return string unique resource name
      */

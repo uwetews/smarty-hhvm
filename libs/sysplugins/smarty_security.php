@@ -132,13 +132,13 @@ class Smarty_Security
     /**
      * + flag if constants can be accessed from template
      *
-     * @var boolean
+     * @var bool
      */
     public $allow_constants = true;
     /**
      * + flag if super globals can be accessed from template
      *
-     * @var boolean
+     * @var bool
      */
     public $allow_super_globals = true;
     /**
@@ -204,7 +204,7 @@ class Smarty_Security
      * @param  string $function_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if function is trusted
+     * @return bool                 true if function is trusted
      * @throws SmartyCompilerException if php function is not trusted
      */
     public function isTrustedPhpFunction($function_name, $compiler)
@@ -224,7 +224,7 @@ class Smarty_Security
      * @param  string $class_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if class is trusted
+     * @return bool                 true if class is trusted
      * @throws SmartyCompilerException if static class is not trusted
      */
     public function isTrustedStaticClass($class_name, $compiler)
@@ -244,7 +244,7 @@ class Smarty_Security
      * @param  string $modifier_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if modifier is trusted
+     * @return bool                 true if modifier is trusted
      * @throws SmartyCompilerException if modifier is not trusted
      */
     public function isTrustedPhpModifier($modifier_name, $compiler)
@@ -264,7 +264,7 @@ class Smarty_Security
      * @param  string $tag_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if tag is trusted
+     * @return bool                 true if tag is trusted
      * @throws SmartyCompilerException if modifier is not trusted
      */
     public function isTrustedTag($tag_name, $compiler)
@@ -296,7 +296,7 @@ class Smarty_Security
      * @param  string $var_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if tag is trusted
+     * @return bool                 true if tag is trusted
      * @throws SmartyCompilerException if modifier is not trusted
      */
     public function isTrustedSpecialSmartyVar($var_name, $compiler)
@@ -316,7 +316,7 @@ class Smarty_Security
      * @param  string $modifier_name
      * @param  object $compiler compiler object
      *
-     * @return boolean                 true if tag is trusted
+     * @return bool                 true if tag is trusted
      * @throws SmartyCompilerException if modifier is not trusted
      */
     public function isTrustedModifier($modifier_name, $compiler)
@@ -346,7 +346,7 @@ class Smarty_Security
      *
      * @param  string $stream_name
      *
-     * @return boolean         true if stream is trusted
+     * @return bool         true if stream is trusted
      * @throws SmartyException if stream is not trusted
      */
     public function isTrustedStream($stream_name)
@@ -363,7 +363,7 @@ class Smarty_Security
      *
      * @param  string $filepath
      *
-     * @return boolean         true if directory is trusted
+     * @return bool         true if directory is trusted
      * @throws SmartyException if directory is not trusted
      */
     public function isTrustedResourceDir($filepath)
@@ -446,7 +446,7 @@ class Smarty_Security
      *
      * @param  string $uri
      *
-     * @return boolean         true if URI is trusted
+     * @return bool         true if URI is trusted
      * @throws SmartyException if URI is not trusted
      * @uses $trusted_uri for list of patterns to match against $uri
      */
@@ -470,7 +470,7 @@ class Smarty_Security
      *
      * @param  string $filepath
      *
-     * @return boolean         true if directory is trusted
+     * @return bool         true if directory is trusted
      * @throws SmartyException if PHP directory is not trusted
      */
     public function isTrustedPHPDir($filepath)

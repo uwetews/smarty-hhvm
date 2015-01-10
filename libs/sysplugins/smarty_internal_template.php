@@ -363,7 +363,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      * configuration
      *
      * @throws SmartyException
-     * @return boolean true if the template must be compiled
+     * @return bool true if the template must be compiled
      */
     public function mustCompile()
     {

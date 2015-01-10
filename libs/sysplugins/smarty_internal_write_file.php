@@ -23,7 +23,7 @@ class Smarty_Internal_Write_File
      * @param  Smarty $smarty    smarty instance
      *
      * @throws SmartyException
-     * @return boolean true
+     * @return bool true
      */
     public static function writeFile($_filepath, $_contents, Smarty $smarty)
     {

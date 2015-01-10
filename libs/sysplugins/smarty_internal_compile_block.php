@@ -70,7 +70,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
      * @param array  $args     array with attributes from parser
      * @param object $compiler compiler object
      *
-     * @return boolean true
+     * @return bool true
      */
     public function compile($args, $compiler)
     {
@@ -371,7 +371,7 @@ class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_Compil
      * @param array  $args     array with attributes from parser
      * @param object $compiler compiler object
      *
-     * @return boolean true
+     * @return bool true
      */
     public function compile($args, $compiler)
     {
@@ -421,7 +421,7 @@ class Smarty_Internal_Compile_Private_Child_Blockclose extends Smarty_Internal_C
      * @param array  $args     array with attributes from parser
      * @param object $compiler compiler object
      *
-     * @return boolean true
+     * @return bool true
      */
     public function compile($args, $compiler)
     {
