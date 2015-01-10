@@ -288,6 +288,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             } else {
                 $this->inheritance_child = false;
             }
+            $_compiled_code = '';
             do {
                 $_compiled_code = '';
                 // flag for aborting current and start recompile
