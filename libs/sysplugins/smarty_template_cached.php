@@ -274,7 +274,7 @@ class Smarty_Template_Cached
         // loop over items, stitch back together
         foreach ($cache_split as $curr_idx => $curr_split) {
             // escape PHP tags in template content
-            $output .= preg_replace('/(<%|%>|<\?php|<\?|\?>|<script\s+language\s*=\s*[\"\']?\s*php\s*[\"\']?\s*>)/', "<?php echo '\$1'; ?>\n", $curr_split);
+            $output .= "echo '" . addcslashes($curr_split, "\'")  . "';\n";
             if (isset($cache_parts[0][$curr_idx])) {
                 $_template->properties['has_nocache_code'] = true;
                 $output .= $cache_parts[1][$curr_idx];

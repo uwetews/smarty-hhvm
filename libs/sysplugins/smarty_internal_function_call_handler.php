@@ -59,7 +59,7 @@ class Smarty_Internal_Function_Call_Handler
                             if (!preg_match("/'{$funcParam['uid']}'([\S\s]*?)'nocache_hash'/", $content, $match2)) {
                                 $content = preg_replace("/('file_dependency'([\S\s]*?)\()/", "\\1{$match1[0]}", $content);
                             }
-                            $cache->write($tplPtr, $content . "<?php " . $match[0] . "?>\n");
+                            $cache->write($tplPtr, $content . "" . $match[0] . "\n");
                         }
                     }
                     return true;

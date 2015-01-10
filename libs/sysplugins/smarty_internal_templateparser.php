@@ -2359,7 +2359,7 @@ class Smarty_Internal_Templateparser
             $this->compiler->tag_nocache = true;
             $this->is_xml = false;
             $save = $this->template->has_nocache_code;
-            $this->_retvalue = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("<?php echo '?>';?>\n", $this->compiler, true));
+            $this->_retvalue = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("echo '?>';?>\n", $this->compiler, true));
             $this->template->has_nocache_code = $save;
         } elseif ($this->php_handling == Smarty::PHP_PASSTHRU) {
             $this->_retvalue = new Smarty_Internal_ParseTree_Text($this, $this->yystack[$this->yyidx + 0]->minor);
@@ -2444,7 +2444,7 @@ class Smarty_Internal_Templateparser
         $this->compiler->tag_nocache = true;
         $this->is_xml = true;
         $save = $this->template->has_nocache_code;
-        $this->_retvalue = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("<?php echo '<?xml';?>", $this->compiler, true));
+        $this->_retvalue = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("echo '<?xml';?>", $this->compiler, true));
         $this->template->has_nocache_code = $save;
     }
 

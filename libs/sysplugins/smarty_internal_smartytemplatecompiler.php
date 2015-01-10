@@ -88,7 +88,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         $this->lex = new $this->lexer_class(str_replace(array("\r\n", "\r"), "\n", $_content), $this);
         $this->parser = new $this->parser_class($this->lex, $this);
         if ($isTemplateSource) {
-            $this->parser->insertPhpCode("<?php\n\$_smarty_tpl->properties['nocache_hash'] = '{$this->nocache_hash}';\n?>\n");
+            $this->parser->insertPhpCode("\$_smarty_tpl->properties['nocache_hash'] = '{$this->nocache_hash}';\n");
         }
         if ($this->inheritance_child) {
             // start state on child templates

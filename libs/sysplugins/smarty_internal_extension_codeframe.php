@@ -55,7 +55,7 @@ class Smarty_Internal_Extension_CodeFrame
             }
             if (!empty($_template->required_plugins['nocache'])) {
                 $_template->has_nocache_code = true;
-                $output .= "echo '/*%%SmartyNocache:{$_template->properties['nocache_hash']}%%*/<?php \$_smarty = \$_smarty_tpl->smarty; ";
+                $output .= "echo '/*%%SmartyNocache:{$_template->properties['nocache_hash']}%%*/\$_smarty = \$_smarty_tpl->smarty;\n";
                 foreach ($_template->required_plugins['nocache'] as $tmp) {
                     foreach ($tmp as $data) {
                         $file = addslashes($data['file']);
@@ -66,11 +66,11 @@ class Smarty_Internal_Extension_CodeFrame
                         }
                     }
                 }
-                $output .= "?>/*/%%SmartyNocache:{$_template->properties['nocache_hash']}%%*/';\n";
+                $output .= "/*/%%SmartyNocache:{$_template->properties['nocache_hash']}%%*/';\n";
             }
         }
-        $output .= "?>\n" . $content;
-        $output .= "<?php }\n}\n?>";
+        $output .= $content;
+        $output .= "}\n}\n";
         return $output;
     }
 
@@ -79,13 +79,10 @@ class Smarty_Internal_Extension_CodeFrame
         if (!isset($_template->properties['unifunc'])) {
             $_template->properties['unifunc'] = 'content_' . str_replace(array('.', ','), '_', uniqid('', true));
         }
-        $output = "<?php\n";
-        $output .= "/*%%SmartyHeaderCode:{$_template->properties['nocache_hash']}%%*/\n";
+        $output = "/*%%SmartyHeaderCode:{$_template->properties['nocache_hash']}%%*/\n";
         $output .= "function {$_template->properties['unifunc']} (\$_smarty_tpl) {\n";
-        $output .= "?>\n" . $content;
-        $output .= "<?php\n";
+        $output .= $content;
         $output .= "/*/%%SmartyNocache:{$_template->properties['nocache_hash']}%%*/\n";
-        $output .= "}\n?>";
         return $output;
     }
 }

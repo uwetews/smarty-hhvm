@@ -29,17 +29,17 @@ class Smarty_Internal_Nocache_Insert
      */
     public static function compile($_function, $_attr, $_template, $_script, $_assign = null)
     {
-        $_output = '<?php ';
+        $_output = '';
         if ($_script != 'null') {
             // script which must be included
             // code for script file loading
-            $_output .= "require_once '{$_script}';";
+            $_output .= "require_once '{$_script}';\n";
         }
         // call insert
         if (isset($_assign)) {
-            $_output .= "\$_smarty_tpl->assign('{$_assign}' , {$_function} (" . var_export($_attr, true) . ",\$_smarty_tpl), true);?>";
+            $_output .= "\$_smarty_tpl->assign('{$_assign}' , {$_function} (" . var_export($_attr, true) . ",\$_smarty_tpl), true);\n";
         } else {
-            $_output .= "echo {$_function}(" . var_export($_attr, true) . ",\$_smarty_tpl);?>";
+            $_output .= "echo {$_function}(" . var_export($_attr, true) . ",\$_smarty_tpl);\n";
         }
         $_tpl = $_template;
         while ($_tpl->parent instanceof Smarty_Internal_Template) {

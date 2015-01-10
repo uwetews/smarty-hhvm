@@ -36,8 +36,6 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
      */
     public function compile($args, $compiler, $parameter, $tag)
     {
-        // This tag does create output
-        $compiler->has_output = true;
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
         if ($_attr['nocache']) {
@@ -67,11 +65,11 @@ class Smarty_Internal_Compile_Private_Registered_Function extends Smarty_Interna
         $function = $tag_info[0];
         // compile code
         if (!is_array($function)) {
-            $output = "<?php echo {$function}({$_params},\$_smarty_tpl);?>\n";
+            $output = "echo {$function}({$_params},\$_smarty_tpl);\n";
         } elseif (is_object($function[0])) {
-            $output = "<?php echo \$_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['{$tag}'][0][0]->{$function[1]}({$_params},\$_smarty_tpl);?>\n";
+            $output = "echo \$_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['{$tag}'][0][0]->{$function[1]}({$_params},\$_smarty_tpl);\n";
         } else {
-            $output = "<?php echo {$function[0]}::{$function[1]}({$_params},\$_smarty_tpl);?>\n";
+            $output = "echo {$function[0]}::{$function[1]}({$_params},\$_smarty_tpl);\n";
         }
 
         return $output;

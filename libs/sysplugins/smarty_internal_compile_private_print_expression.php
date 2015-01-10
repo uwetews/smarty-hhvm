@@ -51,7 +51,7 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
         }
         if (isset($_attr['assign'])) {
             // assign output to variable
-            $output = "<?php \$_smarty_tpl->assign({$_attr['assign']},{$parameter['value']});?>";
+            $output = "\$_smarty_tpl->assign({$_attr['assign']},{$parameter['value']});\n";
         } else {
             // display value
             $output = $parameter['value'];
@@ -114,9 +114,7 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
                     }
                 }
             }
-
-            $compiler->has_output = true;
-            $output = "<?php echo {$output};?>";
+            $output = 'echo ' . $output . ";\n";
         }
 
         return $output;

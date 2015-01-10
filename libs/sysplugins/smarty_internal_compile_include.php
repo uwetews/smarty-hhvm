@@ -203,7 +203,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
                     unset($tpl->compiler);
 
                     // remove header code
-                    $compiled_code = preg_replace("/(<\?php \/\*%%SmartyHeaderCode:{$tpl->properties['nocache_hash']}%%\*\/(.+?)\/\*\/%%SmartyHeaderCode%%\*\/\?>\n)/s", '', $compiled_code);
+                    $compiled_code = preg_replace("/(\s*\*%%SmartyHeaderCode:{$tpl->properties['nocache_hash']}%%\*\/(.+?)\/\*\/%%SmartyHeaderCode%%\*\/\s*)/s", '', $compiled_code);
                     if ($tpl->has_nocache_code) {
                         // replace nocache_hash
                         $compiled_code = str_replace("{$tpl->properties['nocache_hash']}", $compiler->template->properties['nocache_hash'], $compiled_code);
@@ -242,13 +242,13 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             // never call inline templates in nocache mode
             //$compiler->suppressNocacheProcessing = true;
             $_hash = $compiler->parent_compiler->mergedSubTemplatesData[$tpl_name][$uid]['nocache_hash'];
-            $_output = "<?php /*  Call merged included template \"" . $tpl_name . "\" */\n";
+            $_output = "/*  Call merged included template \"" . $tpl_name . "\" */\n";
             if ($update_compile_id) {
                 $_output .= $compiler->makeNocacheCode("\$_compile_id_save[] = \$_smarty_tpl->compile_id;\n\$_smarty_tpl->compile_id = {$_compile_id};\n");
             }
             if (!empty($_vars_nc) && $_caching == 9999 && $_smarty_tpl->caching) {
                 //$compiler->suppressNocacheProcessing = false;
-                $_output .= substr($compiler->processNocacheCode('<?php ' . $_vars_nc . "?>\n", true), 6, - 3);
+                $_output .= substr($compiler->processNocacheCode($_vars_nc, true), 6, - 3);
                 //$compiler->suppressNocacheProcessing = true;
             }
             if (isset($_assign)) {
@@ -259,7 +259,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
             if ($update_compile_id) {
                 $_output .= $compiler->makeNocacheCode("\$_smarty_tpl->compile_id = array_pop(\$_compile_id_save);\n");
             }
-            $_output .= "/*  End of included template \"" . $tpl_name . "\" */?>\n";
+            $_output .= "/*  End of included template \"" . $tpl_name . "\" */\n";
 
             return $_output;
         }
@@ -267,7 +267,7 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         if ($call_nocache) {
             $compiler->tag_nocache = true;
         }
-        $_output = "<?php ";
+        $_output = "";
         if ($update_compile_id) {
             $_output .= "\$_compile_id_save[] = \$_smarty_tpl->compile_id;\n\$_smarty_tpl->compile_id = {$_compile_id};\n";
         }
@@ -280,7 +280,6 @@ class Smarty_Internal_Compile_Include extends Smarty_Internal_CompileBase
         if ($update_compile_id) {
             $_output .= "\$_smarty_tpl->compile_id = array_pop(\$_compile_id_save);\n";
         }
-        $_output .= "?>\n";
         return $_output;
     }
 }

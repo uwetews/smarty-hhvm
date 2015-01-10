@@ -263,8 +263,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
         // template header code
         $template_header = '';
         if (!$this->suppressHeader) {
-            $template_header .= "<?php /* Smarty version " . Smarty::SMARTY_VERSION . ", created on " . strftime("%Y-%m-%d %H:%M:%S") . "\n";
-            $template_header .= "         compiled from \"" . $this->template->source->filepath . "\" */ ?>\n";
+            $template_header .= "/* Smarty version " . Smarty::SMARTY_VERSION . ", created on " . strftime("%Y-%m-%d %H:%M:%S") . "\n";
+            $template_header .= "         compiled from \"" . $this->template->source->filepath . "\" */\n";
         }
 
         if (empty($this->template->source->components)) {
@@ -366,7 +366,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
         // $args contains the attributes parsed and compiled by the lexer/parser
         // assume that tag does compile into code, but creates no HTML output
         $this->has_code = true;
-        $this->has_output = false;
         // log tag/attributes
         if (isset($this->smarty->get_used_tags) && $this->smarty->get_used_tags) {
             $this->template->used_tags[] = array($tag, $args);
@@ -389,10 +388,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
             if ($_output !== true) {
                 // did we get compiled code
                 if ($this->has_code) {
-                    // Does it create output?
-                    if ($this->has_output) {
-                        $_output .= "\n";
-                    }
                     // return compiled code
                     return $_output;
                 }
@@ -442,12 +437,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
                             }
                             $function = $this->smarty->registered_plugins[$plugin_type][$tag][0];
                             if (!is_array($function)) {
-                                return $function($new_args, $this);
+                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $function($new_args, $this));
                             } elseif (is_object($function[0])) {
-                                return $this->smarty->registered_plugins[$plugin_type][$tag][0][0]->$function[1]($new_args, $this);
+                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $this->smarty->registered_plugins[$plugin_type][$tag][0][0]->$function[1]($new_args, $this));
                             } else {
-                                return call_user_func_array($function, array($new_args, $this));
-                            }
+                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', call_user_func_array($function, array($new_args, $this)));
+                             }
                         }
                         // compile registered function or block function
                         if ($plugin_type == Smarty::PLUGIN_FUNCTION || $plugin_type == Smarty::PLUGIN_BLOCK) {
@@ -470,12 +465,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
                                 }
                             }
 
-                            return $plugin($new_args, $this->smarty);
+                            return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin($new_args, $this->smarty));
                         }
                         if (class_exists($plugin, false)) {
                             $plugin_object = new $plugin;
                             if (method_exists($plugin_object, 'compile')) {
-                                return $plugin_object->compile($args, $this);
+                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin_object->compile($args, $this));
                             }
                         }
                         throw new SmartyException("Plugin \"{$tag}\" not callable");
@@ -743,7 +738,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 $this->template->has_nocache_code = true;
                 $_output = addcslashes($content, '\'\\');
                 $_output = str_replace("^#^", "'", $_output);
-                $_output = "<?php echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . $_output . "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';?>\n";
+                $_output = "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . $_output . "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';";
                 // make sure we include modifier plugins for nocache code
                 foreach ($this->modifier_plugins as $plugin_name => $dummy) {
                     if (isset($this->template->required_plugins['compiled'][$plugin_name]['modifier'])) {
@@ -772,7 +767,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function makeNocacheCode($code)
     {
-        return "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/<?php " . str_replace("^#^", "'", addcslashes($code, '\'\\')) . "?>/*/%%SmartyNocache:{$this->nocache_hash}%%*/';\n";
+        return "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . str_replace("^#^", "'", addcslashes($code, '\'\\')) . "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';\n";
     }
 
     /**
