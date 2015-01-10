@@ -54,6 +54,8 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
         if ($mtime !== null) {
             $source->timestamp = $mtime;
         } else {
+            $content = null;
+            $timestamp = null;
             $this->fetch($source->name, $content, $timestamp);
             $source->timestamp = isset($timestamp) ? $timestamp : false;
             if (isset($content)) {
@@ -73,6 +75,8 @@ abstract class Smarty_Resource_Custom extends Smarty_Resource
      */
     public function getContent(Smarty_Template_Source $source)
     {
+        $content = null;
+        $timestamp = null;
         $this->fetch($source->name, $content, $timestamp);
         if (isset($content)) {
             return $content;

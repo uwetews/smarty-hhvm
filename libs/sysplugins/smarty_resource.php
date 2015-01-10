@@ -251,6 +251,7 @@ abstract class Smarty_Resource
      */
     public static function getUniqueTemplateName($template, $template_resource)
     {
+        $name = $type = null;
         self::parseResourceName($template_resource, $template->smarty->default_resource_type, $name, $type);
         // TODO: optimize for Smarty's internal resource types
         $resource = Smarty_Resource::load($template->smarty, $type);

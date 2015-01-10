@@ -271,6 +271,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
 
         $mtime = $this->fetchTimestamp($id, $name, null, null);
         if ($mtime === null) {
+            $content = null;
             $this->fetch($id, $name, null, null, $content, $mtime);
         }
 

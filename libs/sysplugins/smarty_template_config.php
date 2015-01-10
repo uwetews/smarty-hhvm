@@ -101,6 +101,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
             throw new SmartyException('Missing config name');
         }
         // parse resource_name, load resource handler
+        $name = $type = null;
         Smarty_Resource::parseResourceName($template_resource, $smarty->default_config_type, $name, $type);
         // make sure configs are not loaded via anything smarty can't handle
         if (isset($_incompatible_resources[$type])) {
@@ -110,7 +111,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
         $source = new Smarty_Template_Config($resource, $smarty, $template_resource, $type, $name);
         $resource->populate($source, $_template);
         if ((!isset($source->exists) || !$source->exists) && isset($_template->smarty->default_config_handler_func)) {
-            Smarty_Internal_Extension_DefaultTemplateHandler::_getDefault($_template, $source, $resource);
+            Smarty_Internal_Extension_DefaultTemplateHandler::_getDefault($_template, $source);
         }
         $source->unique_resource = $resource->buildUniqueResourceName($smarty, $name, true);
         return $source;

@@ -70,6 +70,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      */
     public function populateTimestamp(Smarty_Template_Cached $cached)
     {
+        $content = $timestamp =  null;
         if (!$this->fetch($cached->filepath, $cached->source->name, $cached->cache_id, $cached->compile_id, $content, $timestamp, $cached->source->uid)) {
             return;
         }
@@ -136,8 +137,8 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     public function readCachedContent(Smarty_Internal_Template $_template)
     {
         $content = $_template->cached->content ? $_template->cached->content : null;
-        $timestamp =  null;
         if ($content === null) {
+            $timestamp =  null;
             if (!$this->fetch($_template->cached->filepath, $_template->source->name, $_template->cache_id, $_template->compile_id, $content, $timestamp, $_template->source->uid)) {
                 return false;
             }
