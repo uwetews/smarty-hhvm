@@ -41,9 +41,9 @@ class Smarty_Internal_ParseTree_Dq extends Smarty_Internal_ParseTree
         $last_subtree = count($this->subtrees) - 1;
         if ($last_subtree >= 0 && $this->subtrees[$last_subtree] instanceof Smarty_Internal_ParseTree_Tag && $this->subtrees[$last_subtree]->saved_block_nesting < $this->parser->block_nesting_level) {
             if ($subtree instanceof Smarty_Internal_ParseTree_Code) {
-                $this->subtrees[$last_subtree]->data .= '<?php echo ' . $subtree->data . ';?>';
+                $this->subtrees[$last_subtree]->data .= 'echo ' . $subtree->data . ";\n";
             } elseif ($subtree instanceof Smarty_Internal_ParseTree_DqContent) {
-                $this->subtrees[$last_subtree]->data .= '<?php echo "' . $subtree->data . '";?>';
+                $this->subtrees[$last_subtree]->data .= 'echo "' . $subtree->data . "\";\n";
             } else {
                 $this->subtrees[$last_subtree]->data .= $subtree->data;
             }
