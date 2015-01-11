@@ -78,23 +78,6 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     }
 
     /**
-     * creates a data object
-     *
-     * @param object $parent next higher level of Smarty variables
-     * @param string $name   optional data block name
-     *
-     * @returns Smarty_Data data object
-     */
-    public function createData($parent = null, $name = null)
-    {
-        $dataObj = new Smarty_Data($parent, $this, $name);
-        if ($this->debugging) {
-            Smarty_Internal_Debug::register_data($dataObj);
-        }
-        return $dataObj;
-    }
-
-    /**
      * Get unique template id
      *
      * @param string     $template_name

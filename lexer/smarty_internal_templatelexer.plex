@@ -227,6 +227,7 @@ class Smarty_Internal_Templatelexer
      namespace = /([0-9]*[a-zA-Z_]\w*)?(\\[0-9]*[a-zA-Z_]\w*)+/
      all = /[\S\s]+/
      emptyjava = /\{\}/
+     xmltag = /<\?xml\s+([\S\s]*?)\?>/
      phpstarttag = /(<script\s+language\s*=\s*[\"\']?\s*php\s*[\"\']?\s*>)|(<\?(?:php\w+|=|[a-zA-Z]+)?)/
      phpendtag = /\?>/
      phpendscript = /<\/script>/
@@ -390,19 +391,19 @@ class Smarty_Internal_Templatelexer
           $this->taglineno = $this->line;
        }
      }
+     xmltag {
+        $this->token = Smarty_Internal_Templateparser::TP_XMLTAG;
+     }
      phpstarttag {
         if (($script = strpos($this->value, '<s') === 0) || in_array($this->value, Array('<?', '<?=', '<?php'))) {
-         if ($script) {
+          if ($script) {
             $this->is_phpScript = true;
-         }
-         $this->token = Smarty_Internal_Templateparser::TP_PHPSTARTTAG;
-       } elseif ($this->value == '<?xml') {
-           $this->token = Smarty_Internal_Templateparser::TP_XMLTAG;
-       } else {
-         $this->token = Smarty_Internal_Templateparser::TP_TEXT;
-         //$this->value = substr($this->value, 0, 2);
-       }
-      }
+          }
+          $this->token = Smarty_Internal_Templateparser::TP_PHPSTARTTAG;
+        } else {
+          $this->token = Smarty_Internal_Templateparser::TP_TEXT;
+        }
+     }
      phpendtag {
        $this->token = Smarty_Internal_Templateparser::TP_PHPENDTAG;
      }

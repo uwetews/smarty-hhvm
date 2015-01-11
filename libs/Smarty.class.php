@@ -775,7 +775,7 @@ class Smarty extends Smarty_Internal_TemplateBase
             }
         } else {
             $_result = array();
-            foreach (self::$global_tpl_vars AS $key => $var) {
+            foreach (self::$global_tpl_vars as $key => $var) {
                 $_result[$key] = $var->value;
             }
 
@@ -1236,6 +1236,23 @@ class Smarty extends Smarty_Internal_TemplateBase
         $this->debug_tpl = $tpl_name;
 
         return $this;
+    }
+
+    /**
+     * creates a data object
+     *
+     * @param object $parent next higher level of Smarty variables
+     * @param string $name   optional data block name
+     *
+     * @returns Smarty_Data data object
+     */
+    public function createData($parent = null, $name = null)
+    {
+        $dataObj = new Smarty_Data($parent, $this, $name);
+        if ($this->debugging) {
+            Smarty_Internal_Debug::register_data($dataObj);
+        }
+        return $dataObj;
     }
 
     /**
