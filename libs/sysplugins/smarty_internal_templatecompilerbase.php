@@ -420,6 +420,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                         $this->trigger_template_error('not allowed method "' . $method . '" in registered object "' . $tag . '"', $this->lex->taglineno);
                     }
                 }
+                $plugin_type = null;
                 // check if tag is registered
                 foreach (array(Smarty::PLUGIN_COMPILER, Smarty::PLUGIN_FUNCTION, Smarty::PLUGIN_BLOCK) as $plugin_type) {
                     if (isset($this->smarty->registered_plugins[$plugin_type][$tag])) {
@@ -839,6 +840,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
             // expected token from parser
             $error_text .= ' - Unexpected "' . $this->lex->value . '"';
             if (count($this->parser->yy_get_expected_tokens($this->parser->yymajor)) <= 4) {
+                $expect = array();
                 foreach ($this->parser->yy_get_expected_tokens($this->parser->yymajor) as $token) {
                     $exp_token = $this->parser->yyTokenName[$token];
                     if (isset($this->lex->smarty_token_names[$exp_token])) {
