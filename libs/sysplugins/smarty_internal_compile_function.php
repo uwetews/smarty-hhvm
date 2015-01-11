@@ -41,13 +41,14 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
     /**
      * Compiles code for the {function} tag
      *
-     * @param  array  $args      array with attributes from parser
-     * @param  object $compiler  compiler object
-     * @param  array  $parameter array with compilation parameter
+     * @param  array                                  $args      array with attributes from parser
+     * @param \Smarty_Internal_SmartyTemplateCompiler $compiler  compiler object
+     * @param  array                                  $parameter array with compilation parameter
      *
      * @return bool true
+     * @throws \SmartyCompilerException
      */
-    public function compile($args, $compiler, $parameter)
+    public function compile($args, Smarty_Internal_SmartyTemplateCompiler $compiler, $parameter)
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -56,7 +57,6 @@ class Smarty_Internal_Compile_Function extends Smarty_Internal_CompileBase
             $compiler->trigger_template_error('nocache option not allowed', $compiler->lex->taglineno);
         }
         unset($_attr['nocache']);
-        $_name = trim($_attr['name'], "'\"");
 
         $save = array($_attr, $compiler->parser->current_buffer,
                       $compiler->template->has_nocache_code, $compiler->template->required_plugins, $compiler->template->caching);
@@ -90,13 +90,13 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
     /**
      * Compiles code for the {/function} tag
      *
-     * @param  array  $args      array with attributes from parser
-     * @param  object $compiler  compiler object
-     * @param  array  $parameter array with compilation parameter
+     * @param  array                                  $args      array with attributes from parser
+     * @param \Smarty_Internal_SmartyTemplateCompiler $compiler  compiler object
+     * @param  array                                  $parameter array with compilation parameter
      *
      * @return bool true
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
+    public function compile($args, Smarty_Internal_SmartyTemplateCompiler $compiler, $parameter)
     {
         $this->compiler = $compiler;
         $saved_data = $this->closeTag($compiler, array('function'));
@@ -206,9 +206,11 @@ class Smarty_Internal_Compile_Functionclose extends Smarty_Internal_CompileBase
     }
 
     /**
-     * @param $match
+     * preg_replace_callback function
      *
-     * @return mixed
+     * @param array $match
+     *
+     * @return string
      */
     function removeNocache($match)
     {

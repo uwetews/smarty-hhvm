@@ -102,7 +102,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
             $compiler->inheritance = true;
             $compiler->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBLOCK);
             $compiler->has_code = false;
-            return;
+            return true;
         }
         // must merge includes
         if ($_attr['nocache'] == true) {
@@ -138,7 +138,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
             }
             $compiler->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBLOCK);
             $compiler->has_code = false;
-            return;
+            return true;
         }
         // if called by {$smarty.block.child} we must search the name of enclosing {block}
         if ($_name == null) {
@@ -174,6 +174,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $_tpl->compiler->suppressFilter = true;
         $_tpl->compiler->suppressTemplatePropertyHeader = true;
         $nocache = $compiler->nocache || $compiler->tag_nocache;
+        $_output = null;
         if (strpos($compiler->template->block_data[$_name]['source'], self::parent) !== false) {
             $_output = str_replace(self::parent, $compiler->parser->current_buffer->to_smarty_php(), $_tpl->compiler->compileTemplate($_tpl, $nocache, $compiler->parent_compiler));
         } elseif ($compiler->template->block_data[$_name]['mode'] == 'prepend') {
@@ -323,7 +324,7 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_CompileBase
                 $compiler->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBODY);
             }
             $compiler->has_code = false;
-            return;
+            return true;
         }
         if (isset($compiler->template->block_data[$_name]) && !isset($compiler->template->block_data[$_name]['compiled'])) {
             $_output = Smarty_Internal_Compile_Block::compileChildBlock($compiler, $_name);
