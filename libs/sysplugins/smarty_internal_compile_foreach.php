@@ -161,7 +161,6 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_CompileBase
                 $output .= " \$_smarty_tpl->tpl_vars['smarty']->value['foreach'][$name]['last'] = \$_smarty_tpl->tpl_vars[$item]->last;\n";
             }
         }
-        $output .= "?>";
 
         return $output;
     }
@@ -192,7 +191,7 @@ class Smarty_Internal_Compile_Foreachelse extends Smarty_Internal_CompileBase
         list($openTag, $nocache, $item, $key) = $this->closeTag($compiler, array('foreach'));
         $this->openTag($compiler, 'foreachelse', array('foreachelse', $nocache, $item, $key));
 
-        return "}\nif (!\$_smarty_tpl->tpl_vars[$item]->_loop) {\n?>";
+        return "}\nif (!\$_smarty_tpl->tpl_vars[$item]->_loop) {\n";
     }
 }
 
@@ -224,6 +223,6 @@ class Smarty_Internal_Compile_Foreachclose extends Smarty_Internal_CompileBase
 
         list($openTag, $compiler->nocache, $item, $key) = $this->closeTag($compiler, array('foreach', 'foreachelse'));
 
-        return "} ?>";
+        return "}\n";
     }
 }

@@ -51,7 +51,7 @@ class Smarty_Internal_Compile_Capture extends Smarty_Internal_CompileBase
         $compiler->_capture_stack[0][] = array($buffer, $assign, $append, $compiler->nocache);
         // maybe nocache because of nocache variables
         $compiler->nocache = $compiler->nocache | $compiler->tag_nocache;
-        $_output = "\$_smarty_tpl->_capture_stack[0][] = array($buffer, $assign, $append); ob_start(); ?>";
+        $_output = "\$_smarty_tpl->_capture_stack[0][] = array($buffer, $assign, $append);\nob_start();\n";
 
         return $_output;
     }

@@ -66,6 +66,6 @@ class Smarty_Internal_Compile_Eval extends Smarty_Internal_CompileBase
             $_output .= "echo \$_template->fetch();\n";
         }
 
-        return "$_output ?>";
+        return $_output;
     }
 }

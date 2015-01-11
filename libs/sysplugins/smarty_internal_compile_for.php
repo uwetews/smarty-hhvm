@@ -69,7 +69,6 @@ class Smarty_Internal_Compile_For extends Smarty_Internal_CompileBase
             $output .= "\$_smarty_tpl->tpl_vars[$_statement[var]]->first = \$_smarty_tpl->tpl_vars[$_statement[var]]->iteration == 1;\n";
             $output .= "\$_smarty_tpl->tpl_vars[$_statement[var]]->last = \$_smarty_tpl->tpl_vars[$_statement[var]]->iteration == \$_smarty_tpl->tpl_vars[$_statement[var]]->total;\n";
         }
-        $output .= "?>";
 
         $this->openTag($compiler, 'for', array('for', $compiler->nocache));
         // maybe nocache because of nocache variables
@@ -104,7 +103,7 @@ class Smarty_Internal_Compile_Forelse extends Smarty_Internal_CompileBase
         list($openTag, $nocache) = $this->closeTag($compiler, array('for'));
         $this->openTag($compiler, 'forelse', array('forelse', $nocache));
 
-        return "}} else { ?>";
+        return "}} else {";
     }
 }
 
@@ -137,9 +136,9 @@ class Smarty_Internal_Compile_Forclose extends Smarty_Internal_CompileBase
         list($openTag, $compiler->nocache) = $this->closeTag($compiler, array('for', 'forelse'));
 
         if ($openTag == 'forelse') {
-            return "}  ?>";
+            return "}\n";
         } else {
-            return "}} ?>";
+            return "}\n}\n";
         }
     }
 }

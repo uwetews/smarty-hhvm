@@ -86,7 +86,7 @@ class Smarty_Internal_Compile_Else extends Smarty_Internal_CompileBase
         list($nesting, $compiler->tag_nocache) = $this->closeTag($compiler, array('if', 'elseif'));
         $this->openTag($compiler, 'else', array($nesting, $compiler->tag_nocache));
 
-        return "} else { ?>";
+        return "} else {\n";
     }
 }
 
@@ -206,9 +206,9 @@ class Smarty_Internal_Compile_Ifclose extends Smarty_Internal_CompileBase
         list($nesting, $compiler->nocache) = $this->closeTag($compiler, array('if', 'else', 'elseif'));
         $tmp = '';
         for ($i = 0; $i < $nesting; $i ++) {
-            $tmp .= '}';
+            $tmp .= "}\n";
         }
 
-        return "{$tmp}?>";
+        return $tmp;
     }
 }

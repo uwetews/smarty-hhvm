@@ -135,8 +135,6 @@ class Smarty_Internal_Compile_Section extends Smarty_Internal_CompileBase
         $output .= "{$section_props}['first']      = ({$section_props}['iteration'] == 1);\n";
         $output .= "{$section_props}['last']       = ({$section_props}['iteration'] == {$section_props}['total']);\n";
 
-        $output .= "?>";
-
         return $output;
     }
 }
@@ -165,7 +163,7 @@ class Smarty_Internal_Compile_Sectionelse extends Smarty_Internal_CompileBase
         list($openTag, $nocache) = $this->closeTag($compiler, array('section'));
         $this->openTag($compiler, 'sectionelse', array('sectionelse', $nocache));
 
-        return "endfor; else: ?>";
+        return "endfor; else:";
     }
 }
 
@@ -198,9 +196,9 @@ class Smarty_Internal_Compile_Sectionclose extends Smarty_Internal_CompileBase
         list($openTag, $compiler->nocache) = $this->closeTag($compiler, array('section', 'sectionelse'));
 
         if ($openTag == 'sectionelse') {
-            return "endif; ?>";
+            return "endif;";
         } else {
-            return "endfor; endif; ?>";
+            return "endfor; endif;";
         }
     }
 }
