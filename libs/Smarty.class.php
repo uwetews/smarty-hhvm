@@ -750,6 +750,7 @@ class Smarty extends Smarty_Internal_TemplateBase
         // create template object
         $save = $this->template_objects;
         $tpl = new $this->template_class($resource_name, $this);
+        $tpl->loadSource();
         // check if it does exists
         $result = $tpl->source->exists;
         $this->template_objects = $save;

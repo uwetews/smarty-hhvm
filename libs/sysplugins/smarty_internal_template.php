@@ -14,9 +14,6 @@
  * @package    Smarty
  * @subpackage Template
  *
- * @property Smarty_Template_Source   $source
- * @property Smarty_Template_Compiled $compiled
- * @property Smarty_Template_Cached   $cached
  */
 class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
 {
@@ -395,6 +392,9 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function mustCompile()
     {
+        if (!isset($this->source)) {
+            $this->loadSource();
+        }
         if (!$this->source->exists) {
             if ($this->parent instanceof Smarty_Internal_Template) {
                 $parent_resource = " in '$this->parent->template_resource}'";
