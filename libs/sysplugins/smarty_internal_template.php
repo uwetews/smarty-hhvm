@@ -91,6 +91,34 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     public $_capture_stack = array(0 => array());
 
     /**
+     * Source object
+     *
+     * @var Smarty_Template_Source
+     */
+    public $source = null;
+
+    /**
+     * Compiled object
+     *
+     * @var Smarty_Template_Compiled
+     */
+    public $compiled = null;
+
+    /**
+     * Cached object
+     *
+     * @var Smarty_Template_Cached
+     */
+    public $cached = null;
+
+    /**
+     * Compiler object
+     *
+     * @var Smarty_Internal_SmartyTemplateCompiler
+     */
+    public $compiler = null;
+
+    /**
      * Create template data object
      * Some of the global Smarty settings copied to template scope
      * It load the required template resources and caching plugins
@@ -389,6 +417,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function compileTemplateSource()
     {
+        $this->loadCompiled();
         return $this->compiled->compileTemplateSource($this);
     }
 
@@ -401,6 +430,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function writeCachedContent($content)
     {
+        $this->loadCached();
         return $this->cached->writeCachedContent($this, $content);
     }
 
@@ -748,20 +778,55 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
     {
         Smarty_CacheResource::invalidLoadedCache($this->smarty);
 
-        return $this->cached->handler->clear($this->smarty, $this->template_name, $this->cache_id, $this->compile_id, $exp_time);
+        return $this->cached->handler->clear($this->smarty, $this->template_resource, $this->cache_id, $this->compile_id, $exp_time);
     }
 
     /**
-     * Load source resource
+     * Load source object
      *
      * @throws SmartyException
      */
     public function loadSource()
     {
-        $this->source = Smarty_Template_Source::load($this);
-        if ($this->smarty->template_resource_caching && !$this->source->recompiled && isset($this->templateId)) {
-            $this->smarty->template_objects[$this->templateId] = $this;
+        if (!isset($this->source)) {
+            $this->source = Smarty_Template_Source::load($this);
+            if ($this->smarty->template_resource_caching && !$this->source->recompiled && isset($this->templateId)) {
+                $this->smarty->template_objects[$this->templateId] = $this;
+            }
         }
+    }
+
+    /**
+     * Load compiled object
+     *
+     */
+    public function loadCompiled()
+    {
+        if (!isset($this->compiled)) {
+            $this->compiled = Smarty_Template_Compiled::load($this);
+        }
+    }
+
+    /**
+     * Load cached object
+     *
+     */
+    public function loadCached()
+    {
+        if (!isset($this->cached)) {
+            $this->cached = Smarty_Template_Cached::load($this);
+        }
+    }
+
+    /**
+     * Load compiler object
+     *
+     * @throws \SmartyException
+     */
+    public function loadCompiler()
+    {
+        $this->smarty->loadPlugin($this->source->compiler_class);
+        $this->compiler = new $this->source->compiler_class($this->source->template_lexer_class, $this->source->template_parser_class, $this->smarty);
     }
 
     /**
@@ -774,24 +839,11 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      */
     public function __set($property_name, $value)
     {
-        switch ($property_name) {
-            case 'source':
-            case 'compiled':
-            case 'cached':
-            case 'compiler':
-                $this->$property_name = $value;
+        if (property_exists($this->smarty, $property_name)) {
+            $this->smarty->$property_name = $value;
 
-                return;
-
-            // FIXME: routing of template -> smarty attributes
-            default:
-                if (property_exists($this->smarty, $property_name)) {
-                    $this->smarty->$property_name = $value;
-
-                    return;
-                }
+            return;
         }
-
         throw new SmartyException("invalid template property '$property_name'.");
     }
 
@@ -800,37 +852,14 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase
      *
      * @param string $property_name property name
      *
-     * @return mixed|Smarty_Template_Cached
+     * @return mixed
      * @throws SmartyException
      */
     public function __get($property_name)
     {
-        switch ($property_name) {
-            case 'source':
-                $this->loadSource();
-                return $this->source;
-
-            case 'compiled':
-                $this->compiled = Smarty_Template_Compiled::load($this);
-                return $this->compiled;
-
-            case 'cached':
-                $this->cached = Smarty_Template_Cached::load($this);
-                return $this->cached;
-
-            case 'compiler':
-                $this->smarty->loadPlugin($this->source->compiler_class);
-                $this->compiler = new $this->source->compiler_class($this->source->template_lexer_class, $this->source->template_parser_class, $this->smarty);
-
-                return $this->compiler;
-
-            // FIXME: routing of template -> smarty attributes
-            default:
-                if (property_exists($this->smarty, $property_name)) {
-                    return $this->smarty->$property_name;
-                }
+        if (property_exists($this->smarty, $property_name)) {
+            return $this->smarty->$property_name;
         }
-
         throw new SmartyException("template property '$property_name' does not exist.");
     }
 

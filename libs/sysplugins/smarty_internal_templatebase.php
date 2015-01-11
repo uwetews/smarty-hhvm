@@ -62,6 +62,9 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
     public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
         if ($template === null && $this instanceof $this->template_class) {
+            if (!isset($this->cached)) {
+                $this->cached = Smarty_Template_Cached::load($this);
+            }
             return $this->cached->valid;
         }
         if (!($template instanceof $this->template_class)) {
@@ -71,7 +74,7 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
             $template = $this->smarty->createTemplate($template, $cache_id, $compile_id, $parent, false);
         }
         // return cache status of template
-        return $template->cached->valid;
+        return $template->isCached();
     }
 
     /**
@@ -531,4 +534,5 @@ abstract class Smarty_Internal_TemplateBase extends Smarty_Internal_Data
         // must be unknown
         throw new SmartyException("Call of unknown method '$name'.");
     }
+
 }

@@ -210,6 +210,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         $uid = '';
         if (isset($resource_name)) {
             $tpl = new $smarty->template_class($resource_name, $smarty);
+            $tpl->loadSource();
             if ($tpl->source->exists) {
                 $uid = $tpl->source->uid;
             }

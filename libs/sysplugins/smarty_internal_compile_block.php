@@ -169,6 +169,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $_tpl->variable_filters = $compiler->template->variable_filters;
         $_tpl->properties['nocache_hash'] = $compiler->template->properties['nocache_hash'];
         $_tpl->allow_relative_path = true;
+        $_tpl->loadCompiler();
         $_tpl->compiler->inheritance = true;
         $_tpl->compiler->suppressHeader = true;
         $_tpl->compiler->suppressFilter = true;

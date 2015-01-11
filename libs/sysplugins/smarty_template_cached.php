@@ -120,6 +120,9 @@ class Smarty_Template_Cached
      */
     static function load(Smarty_Internal_Template $_template)
     {
+        if (!isset($_template->source)) {
+            $_template->loadSource();
+        }
         $_template->cached = $cached = new Smarty_Template_Cached($_template);
 
         //

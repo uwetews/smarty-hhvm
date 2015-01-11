@@ -72,6 +72,9 @@ abstract class Smarty_CacheResource
      */
     public function getCachedContent(Smarty_Internal_Template $_template)
     {
+        if (!isset($_template->cached)) {
+            $_template = Smarty_Template_Cached::load($_template);
+        }
         if ($_template->cached->handler->process($_template)) {
             ob_start();
             $_template->properties['unifunc']($_template);
@@ -216,11 +219,13 @@ abstract class Smarty_CacheResource
      */
     public static function invalidLoadedCache(Smarty $smarty)
     {
+        // TODO
         foreach ($smarty->template_objects as $tpl) {
-            if (isset($tpl->cached)) {
+ /**           if (isset($tpl->cached)) {
                 $tpl->cached->valid = false;
                 $tpl->cached->processed = false;
             }
+  * */
         }
     }
 }
