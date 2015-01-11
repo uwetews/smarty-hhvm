@@ -24,7 +24,7 @@ class Smarty_Internal_Extension_CodeFrame
      *
      * @return string
      */
-    public static function create(Smarty_Internal_Template $_template, $content = '', $cache = false)
+    public static function create(Smarty_Internal_Template $_template, $content = '', $header = '', $cache = false)
     {
         // build property code
         $_template->properties['has_nocache_code'] = $_template->has_nocache_code || !empty($_template->required_plugins['nocache']);
@@ -33,6 +33,7 @@ class Smarty_Internal_Extension_CodeFrame
             $_template->properties['unifunc'] = 'content_' . str_replace(array('.', ','), '_', uniqid('', true));
         }
         $output = "<?php\n";
+        $output .= $header;
         $output .= "/*%%SmartyHeaderCode:{$_template->properties['nocache_hash']}%%*/\n";
         if ($_template->smarty->direct_access_security) {
             $output .= "if(!defined('SMARTY_DIR')) exit('no direct access allowed');\n";

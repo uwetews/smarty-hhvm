@@ -345,7 +345,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
         if ($this->suppressTemplatePropertyHeader) {
             $_compiled_code .= $merged_code;
         } else {
-            $_compiled_code = $template_header . Smarty_Internal_Extension_CodeFrame::create($template, $_compiled_code) . $merged_code;
+            $_compiled_code = Smarty_Internal_Extension_CodeFrame::create($template, $_compiled_code, $template_header) . $merged_code;
         }
         if (!empty($this->templateFunctionCode)) {
             // run postfilter if required on compiled template code

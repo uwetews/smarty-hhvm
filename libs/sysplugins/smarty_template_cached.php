@@ -303,7 +303,7 @@ class Smarty_Template_Cached
         }
         $_template->properties['cache_lifetime'] = $_template->cache_lifetime;
         $_template->properties['unifunc'] = 'content_' . str_replace(array('.', ','), '_', uniqid('', true));
-        $content = Smarty_Internal_Extension_CodeFrame::create($_template, $content, true);
+        $content = Smarty_Internal_Extension_CodeFrame::create($_template, $content, '', true);
         return $this->write($_template, $content);
     }
 
