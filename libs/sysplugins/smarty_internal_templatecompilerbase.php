@@ -18,6 +18,12 @@
 abstract class Smarty_Internal_TemplateCompilerBase
 {
     /**
+     * Global smarty instance
+     *
+     * @var Smarty
+     */
+    public $smarty = null;
+    /**
      * hash for nocache sections
      *
      * @var mixed
@@ -190,6 +196,13 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @var array
      */
     public $called_functions = array();
+
+    /**
+     * Restart compile flag
+     *
+     * @var bool
+     */
+    public $abort_and_recompile = false;
 
     /**
      * compiled template function code
