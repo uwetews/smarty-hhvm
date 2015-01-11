@@ -18,12 +18,6 @@
 abstract class Smarty_Internal_TemplateCompilerBase
 {
     /**
-     * Global smarty instance
-     *
-     * @var Smarty
-     */
-    public $smarty = null;
-    /**
      * hash for nocache sections
      *
      * @var mixed
@@ -196,13 +190,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @var array
      */
     public $called_functions = array();
-
-    /**
-     * Restart compile flag
-     *
-     * @var bool
-     */
-    public $abort_and_recompile = false;
 
     /**
      * compiled template function code
@@ -434,7 +421,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                     }
                 }
                 $plugin_type = null;
-                 // check if tag is registered
+                // check if tag is registered
                 foreach (array(Smarty::PLUGIN_COMPILER, Smarty::PLUGIN_FUNCTION, Smarty::PLUGIN_BLOCK) as $plugin_type) {
                     if (isset($this->smarty->registered_plugins[$plugin_type][$tag])) {
                         // if compiler function plugin call it now
