@@ -51,17 +51,16 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
-        // never compile as nocache code
-        $compiler->suppressNocacheProcessing = true;
-        $compiler->tag_nocache = true;
-        $_smarty_tpl = $compiler->template;
         $_name = null;
         $_script = null;
-
+        $_smarty_tpl = $compiler->template;
         $_output = '';
         // save possible attributes
         eval('$_name = ' . $_attr['name'] . ';');
         if (isset($_attr['assign'])) {
+            if ($compiler->template->caching && !$compiler->nocache) {
+                $compiler->trigger_template_error(" {insert... assign=...} function '{$_name}' can't be used if caching is enabled", $compiler->lex->taglineno);
+            }
             // output will be stored in a smarty variable instead of being displayed
             $_assign = $_attr['assign'];
             // create variable to make sure that the compiler knows about its nocache status
@@ -70,7 +69,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
         if (isset($_attr['script'])) {
             // script which must be included
             $_function = "smarty_insert_{$_name}";
-            $_smarty_tpl = $compiler->template;
             $_filepath = false;
             eval('$_script = ' . $_attr['script'] . ';');
             if (!isset($compiler->smarty->security_policy) && file_exists($_script)) {
@@ -119,19 +117,22 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             $_paramsArray[] = "'$_key' => $_value";
         }
         $_params = 'array(' . implode(", ", $_paramsArray) . ')';
+        if ($compiler->template->caching) {
+            $compiler->tag_nocache = true;
+        }
         // call insert
         if (isset($_assign)) {
-            if ($_smarty_tpl->caching) {
-                $_output .= "echo Smarty_Internal_Nocache_Insert::compile ('{$_function}',{$_params}, \$_smarty_tpl, '{$_filepath}',{$_assign});\n";
-            } else {
+//            if ($compiler->template->caching) {
+//                $_output .= "echo Smarty_Internal_Nocache_Insert::compile ('{$_function}',{$_params}, \$_smarty_tpl, '{$_filepath}',{$_assign});\n";
+//            } else {
                 $_output .= "\$_smarty_tpl->assign({$_assign} , {$_function} ({$_params},\$_smarty_tpl), true);\n";
-            }
+ //           }
         } else {
-            if ($_smarty_tpl->caching) {
-                $_output .= "echo Smarty_Internal_Nocache_Insert::compile ('{$_function}',{$_params}, \$_smarty_tpl, '{$_filepath}');\n";
-            } else {
+ //           if ($compiler->template->caching) {
+//                $_output .= "echo Smarty_Internal_Nocache_Insert::compile ('{$_function}',{$_params}, \$_smarty_tpl, '{$_filepath}');\n";
+//            } else {
                 $_output .= "echo {$_function}({$_params},\$_smarty_tpl);\n";
-            }
+//            }
         }
 
         return $_output;

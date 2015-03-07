@@ -327,7 +327,8 @@ class Smarty_Internal_Data
             // found it, return it
             return Smarty::$global_tpl_vars[$variable];
         }
-        if ($this->smarty->error_unassigned && $error_enable) {
+        $smarty = isset($this->smarty) ? $this->smarty : $this;
+        if ($smarty->error_unassigned && $error_enable) {
             // force a notice
             $x = $$variable;
         }
@@ -394,7 +395,8 @@ class Smarty_Internal_Data
             return $_result;
         }
 
-        if ($this->smarty->error_unassigned) {
+        $smarty = isset($this->smarty) ? $this->smarty : $this;
+        if ($smarty->error_unassigned) {
             throw new SmartyException('Undefined stream variable "' . $variable . '"');
         } else {
             return null;

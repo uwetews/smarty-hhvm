@@ -1,69 +1,4 @@
 <?php
-class TPC_yyToken implements ArrayAccess
-{
-    public $string = '';
-    public $metadata = array();
-
-    public function __construct($s, $m = array())
-    {
-        if ($s instanceof TPC_yyToken) {
-            $this->string = $s->string;
-            $this->metadata = $s->metadata;
-        } else {
-            $this->string = (string) $s;
-            if ($m instanceof TPC_yyToken) {
-                $this->metadata = $m->metadata;
-            } elseif (is_array($m)) {
-                $this->metadata = $m;
-            }
-        }
-    }
-
-    public function __toString()
-    {
-        return $this->string;
-    }
-
-    public function offsetExists($offset)
-    {
-        return isset($this->metadata[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->metadata[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if ($offset === null) {
-            if (isset($value[0])) {
-                $x = ($value instanceof TPC_yyToken) ?
-                    $value->metadata : $value;
-                $this->metadata = array_merge($this->metadata, $x);
-
-                return;
-            }
-            $offset = count($this->metadata);
-        }
-        if ($value === null) {
-            return;
-        }
-        if ($value instanceof TPC_yyToken) {
-            if ($value->metadata) {
-                $this->metadata[$offset] = $value->metadata;
-            }
-        } elseif ($value) {
-            $this->metadata[$offset] = $value;
-        }
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->metadata[$offset]);
-    }
-}
-
 class TPC_yyStackEntry
 {
     public $stateno;       /* The state-number */
@@ -146,7 +81,7 @@ class Smarty_Internal_Configfileparser
      *
      * @var array
      */
-    private static $escapes_single = Array('\\' => '\\',
+    private static $escapes_single = array('\\' => '\\',
                                            '\'' => '\'');
 
     /**
@@ -256,7 +191,7 @@ class Smarty_Internal_Configfileparser
      * @param array $var
      * @param array $target_array
      */
-    private function set_var(Array $var, Array &$target_array)
+    private function set_var(array $var, array &$target_array)
     {
         $key = $var["key"];
         $value = $var["value"];
@@ -274,10 +209,10 @@ class Smarty_Internal_Configfileparser
      *
      * @param array $vars
      */
-    private function add_global_vars(Array $vars)
+    private function add_global_vars(array $vars)
     {
         if (!isset($this->compiler->config_data['vars'])) {
-            $this->compiler->config_data['vars'] = Array();
+            $this->compiler->config_data['vars'] = array();
         }
         foreach ($vars as $var) {
             $this->set_var($var, $this->compiler->config_data);
@@ -290,10 +225,10 @@ class Smarty_Internal_Configfileparser
      * @param string $section_name
      * @param array  $vars
      */
-    private function add_section_vars($section_name, Array $vars)
+    private function add_section_vars($section_name, array $vars)
     {
         if (!isset($this->compiler->config_data['sections'][$section_name]['vars'])) {
-            $this->compiler->config_data['sections'][$section_name]['vars'] = Array();
+            $this->compiler->config_data['sections'][$section_name]['vars'] = array();
         }
         foreach ($vars as $var) {
             $this->set_var($var, $this->compiler->config_data['sections'][$section_name]);
@@ -497,7 +432,7 @@ static public $yy_action = array(
 
     public function __destruct()
     {
-        while ($this->yystack !== Array()) {
+        while ($this->yystack !== array()) {
             $this->yy_pop_parser_stack();
         }
         if (is_resource($this->yyTraceFILE)) {
@@ -818,15 +753,15 @@ static public $yy_action = array(
     }
 #line 297 "../smarty/lexer/smarty_internal_configfileparser.y"
     function yy_r7(){
-    $this->_retvalue = array_merge($this->yystack[$this->yyidx + -1]->minor, Array($this->yystack[$this->yyidx + 0]->minor));
+    $this->_retvalue = array_merge($this->yystack[$this->yyidx + -1]->minor, array($this->yystack[$this->yyidx + 0]->minor));
     }
 #line 301 "../smarty/lexer/smarty_internal_configfileparser.y"
     function yy_r8(){
-    $this->_retvalue = Array();
+    $this->_retvalue = array();
     }
 #line 307 "../smarty/lexer/smarty_internal_configfileparser.y"
     function yy_r9(){
-    $this->_retvalue = Array("key" => $this->yystack[$this->yyidx + -2]->minor, "value" => $this->yystack[$this->yyidx + 0]->minor);
+    $this->_retvalue = array("key" => $this->yystack[$this->yyidx + -2]->minor, "value" => $this->yystack[$this->yyidx + 0]->minor);
     }
 #line 312 "../smarty/lexer/smarty_internal_configfileparser.y"
     function yy_r10(){

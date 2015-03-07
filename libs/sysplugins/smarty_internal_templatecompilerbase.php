@@ -26,9 +26,9 @@ abstract class Smarty_Internal_TemplateCompilerBase
     /**
      * hash for nocache sections
      *
-     * @var mixed
+     * @var string
      */
-    public $nocache_hash = null;
+    public $nocache_hash = '';
 
     /**
      * suppress generation of nocache code
@@ -184,6 +184,13 @@ abstract class Smarty_Internal_TemplateCompilerBase
     public $write_compiled_code = true;
 
     /**
+     * compiled code has nocache code
+     *
+     * @var bool
+     */
+    public $has_nocache_code = false;
+
+    /**
      * flag if currently a template function is compiled
      *
      * @var bool
@@ -260,11 +267,6 @@ abstract class Smarty_Internal_TemplateCompilerBase
     {
         $this->parent_compiler = $parent_compiler ? $parent_compiler : $this;
         $nocache = isset($nocache) ? $nocache : false;
-        if (empty($template->properties['nocache_hash'])) {
-            $template->properties['nocache_hash'] = $this->nocache_hash;
-        } else {
-            $this->nocache_hash = $template->properties['nocache_hash'];
-        }
         // flag for nochache sections
         $this->nocache = $nocache;
         $this->tag_nocache = false;
@@ -457,7 +459,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
                                 return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $this->smarty->registered_plugins[$plugin_type][$tag][0][0]->$function[1]($new_args, $this));
                             } else {
                                 return preg_replace(array('#<\?php\s*#', '#\?>#'), '', call_user_func_array($function, array($new_args, $this)));
-                             }
+                            }
                         }
                         // compile registered function or block function
                         if ($plugin_type == Smarty::PLUGIN_FUNCTION || $plugin_type == Smarty::PLUGIN_BLOCK) {
@@ -564,23 +566,23 @@ abstract class Smarty_Internal_TemplateCompilerBase
                         $this->tag_nocache = true;
                     }
                     $function = $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0];
-                    if (!is_array($function)) {
-                        return $function($args, $this);
+                     if (!is_array($function)) {
+                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $function($args, $this));
                     } elseif (is_object($function[0])) {
-                        return $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0][0]->$function[1]($args, $this);
+                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0][0]->$function[1]($args, $this));
                     } else {
-                        return call_user_func_array($function, array($args, $this));
+                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', call_user_func_array($function, array($args, $this)));
                     }
                 }
                 if ($this->smarty->loadPlugin('smarty_compiler_' . $tag)) {
                     $plugin = 'smarty_compiler_' . $tag;
                     if (is_callable($plugin)) {
-                        return $plugin($args, $this->smarty);
+                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin($args, $this->smarty));
                     }
                     if (class_exists($plugin, false)) {
                         $plugin_object = new $plugin;
                         if (method_exists($plugin_object, 'compile')) {
-                            return $plugin_object->compile($args, $this);
+                            return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin_object->compile($args, $this));
                         }
                     }
                     throw new SmartyException("Plugin \"{$tag}\" not callable");
@@ -608,11 +610,11 @@ abstract class Smarty_Internal_TemplateCompilerBase
     {
         // check if tag allowed by security
         if (!isset($this->smarty->security_policy) || $this->smarty->security_policy->isTrustedTag($tag, $this)) {
-        	// re-use object if already exists
+            // re-use object if already exists
             if (!isset(self::$_tag_objects[$tag])) {
-        		// lazy load internal compiler plugin
-        		$class_name = 'Smarty_Internal_Compile_' . $tag;
-        		if ($this->smarty->loadPlugin($class_name)) {
+                // lazy load internal compiler plugin
+                $class_name = 'Smarty_Internal_Compile_' . $tag;
+                if ($this->smarty->loadPlugin($class_name)) {
                     self::$_tag_objects[$tag] = new $class_name;
                 } else {
                     return false;
@@ -737,8 +739,8 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * If the content is compiled code and it should be not cached the code is injected
      * into the rendered output.
      *
-     * @param  string  $content content of template element
-     * @param  bool $is_code true if content is compiled code
+     * @param  string $content content of template element
+     * @param  bool   $is_code true if content is compiled code
      *
      * @return string  content
      */
@@ -751,26 +753,24 @@ abstract class Smarty_Internal_TemplateCompilerBase
                 ($this->nocache || $this->tag_nocache)
             ) {
                 $this->template->has_nocache_code = true;
-                $_output = addcslashes($content, '\'\\');
-                $_output = str_replace("^#^", "'", $_output);
-                $_output = "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . $_output . "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';";
+                $this->has_nocache_code = true;
+                $content = addcslashes($content, '\'\\');
+                $content2 = str_replace("^#^", "'", $content);
+                $content = '';
+                $content .= "\$_smarty_tpl->buffer->toBufferCacheCode('{$content2}');\n";
                 // make sure we include modifier plugins for nocache code
                 foreach ($this->modifier_plugins as $plugin_name => $dummy) {
                     if (isset($this->template->required_plugins['compiled'][$plugin_name]['modifier'])) {
                         $this->template->required_plugins['nocache'][$plugin_name]['modifier'] = $this->template->required_plugins['compiled'][$plugin_name]['modifier'];
                     }
                 }
-            } else {
-                $_output = $content;
             }
-        } else {
-            $_output = $content;
         }
         $this->modifier_plugins = array();
         $this->suppressNocacheProcessing = false;
         $this->tag_nocache = false;
 
-        return $_output;
+        return $content;
     }
 
     /**
@@ -782,7 +782,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public function makeNocacheCode($code)
     {
-        return "echo '/*%%SmartyNocache:{$this->nocache_hash}%%*/" . str_replace("^#^", "'", addcslashes($code, '\'\\')) . "/*/%%SmartyNocache:{$this->nocache_hash}%%*/';\n";
+        return "echo '/*%%SmartyNocache%%*/" . str_replace("^#^", "'", addcslashes($code, '\'\\')) . "/*/%%SmartyNocache%%*/';\n";
     }
 
     /**

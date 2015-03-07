@@ -152,15 +152,16 @@ class Smarty_Template_Compiled
             $compileCheck = $_template->smarty->compile_check;
             $_template->smarty->compile_check = false;
             if ($_template->source->recompiled) {
+                $level = ob_get_level();
                 try {
-                    ob_start();
                     eval("?>" . $this->code);
                 }
                 catch (Exception $e) {
-                    ob_get_clean();
+                    while (ob_get_level() > $level) {
+                        ob_end_clean();
+                    }
                     throw $e;
                 }
-                ob_get_clean();
                 $this->code = null;
             } else {
                 include($_template->compiled->filepath);
@@ -195,7 +196,8 @@ class Smarty_Template_Compiled
             $this->process($_template);
         }
         $_template->properties['unifunc'] = $this->unifunc;
-        return $_template->getRenderedTemplateCode();
+        $_template->getRenderedTemplateCode();
+        return;
     }
 
     /**
@@ -217,12 +219,16 @@ class Smarty_Template_Compiled
                 touch($_template->compiled->filepath);
             }
         }
-        // call compiler
+        $level = ob_get_level();
         try {
             $_template->loadCompiler();
             $code = $_template->compiler->compileTemplate($_template);
         }
         catch (Exception $e) {
+            $_template->buffer = null;
+            while (ob_get_level() > $level) {
+                ob_end_clean();
+            }
             // restore old timestamp in case of error
             if (!$_template->source->recompiled && $saved_timestamp) {
                 touch($_template->compiled->filepath, $saved_timestamp);

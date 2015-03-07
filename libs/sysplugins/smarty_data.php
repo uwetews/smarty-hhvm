@@ -30,6 +30,7 @@ class Smarty_Data extends Smarty_Internal_Data
      * @var string
      */
     public $dataObjectName = '';
+
     /**
      * Smarty object
      *
@@ -40,13 +41,13 @@ class Smarty_Data extends Smarty_Internal_Data
     /**
      * create Smarty data object
      *
-     * @param Smarty|array                    $_parent parent template
-     * @param Smarty|Smarty_Internal_Template $smarty  global smarty instance
-     * @param string                          $name    optional data block name
+     * @param Smarty_Internal_TemplateBase|array|null                   $_parent parent template
+     * @param Smarty_Internal_TemplateBase|null $smarty  global smarty instance
+     * @param string|nukk                          $name    optional data block name
      *
      * @throws SmartyException
      */
-    public function __construct($_parent = null, $smarty = null, $name = null)
+    public function __construct($_parent = null, Smarty_Internal_TemplateBase $smarty = null, $name = null)
     {
         self::$count ++;
         $this->dataObjectName = 'Data_object ' . (isset($name) ? "'{$name}'" : self::$count);

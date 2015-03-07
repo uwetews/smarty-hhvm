@@ -117,17 +117,17 @@ class Smarty_Internal_Templateparser
      */
     public $block_nesting_level = 0;
     /**
-     * xml tag flag
-     *
-     * @var bool
-     */
-    private $is_xml = false;
-    /**
      * security object
      *
      * @var Smarty_Security
      */
     private $security = null;
+    /**
+     * allow <?php
+     *
+     * @var bool
+     */
+    private $php_allow = false;
     /**
      * asp enabled
      *
@@ -289,7 +289,8 @@ template_element(res)::= PHPSTARTTAG(st). {
         if (!($this->smarty instanceof SmartyBC)) {
             $this->compiler->trigger_template_error (self::Err3);
         }
-        res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode('<?php ', true));
+        $this->php_allow = true;
+        res = null;
     } elseif ($this->php_handling == Smarty::PHP_REMOVE) {
         res = null;
     }
@@ -297,18 +298,13 @@ template_element(res)::= PHPSTARTTAG(st). {
 
                       // '?>' tag
 template_element(res)::= PHPENDTAG(st). {
-    if ($this->is_xml) {
-        $this->compiler->tag_nocache = true; 
-        $this->is_xml = false;
-        $save = $this->template->has_nocache_code; 
-        res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("<?php echo '?>';?>\n", $this->compiler, true));
-        $this->template->has_nocache_code = $save;
-    } elseif ($this->php_handling == Smarty::PHP_PASSTHRU) {
+    if ($this->php_handling == Smarty::PHP_PASSTHRU) {
         res = new Smarty_Internal_ParseTree_Text($this, st);
     } elseif ($this->php_handling == Smarty::PHP_QUOTE) {
         res = new Smarty_Internal_ParseTree_Text($this, htmlspecialchars('?>', ENT_QUOTES));
     } elseif ($this->php_handling == Smarty::PHP_ALLOW) {
-        res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode('?>', true));
+        $this->php_allow = false;
+        res = null;
     } elseif ($this->php_handling == Smarty::PHP_REMOVE) {
         res = null;
     }
@@ -324,7 +320,8 @@ template_element(res)::= PHPENDSCRIPT(st). {
         } elseif ($this->php_handling == Smarty::PHP_QUOTE) {
             res = new Smarty_Internal_ParseTree_Text($this, htmlspecialchars(st, ENT_QUOTES));
         } elseif ($this->php_handling == Smarty::PHP_ALLOW) {
-            res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode('?>', true));
+            $this->php_allow = false;
+            res = null;
         } elseif ($this->php_handling == Smarty::PHP_REMOVE) {
             res = null;
         }
@@ -342,7 +339,8 @@ template_element(res)::= ASPSTARTTAG(st). {
             if (!($this->smarty instanceof SmartyBC)) {
                 $this->compiler->trigger_template_error (self::Err3);
             }
-            res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode('<%', true));
+            $this->php_allow = true;
+            res = null;
         } else {
             res = new Smarty_Internal_ParseTree_Text($this, st);
         }
@@ -363,7 +361,8 @@ template_element(res)::= ASPENDTAG(st). {
         res = new Smarty_Internal_ParseTree_Text($this, htmlspecialchars('%>', ENT_QUOTES));
     } elseif ($this->php_handling == Smarty::PHP_ALLOW) {
         if ($this->asp_tags) {
-            res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode('%>', true));
+            $this->php_allow = true;
+            res = null;
         } else {
             res = new Smarty_Internal_ParseTree_Text($this, st);
         }
@@ -378,20 +377,20 @@ template_element(res)::= ASPENDTAG(st). {
 
 
                       // XML tag
-template_element(res)::= XMLTAG. {
-    $this->compiler->tag_nocache = true;
-    $this->is_xml = true; 
-    $save = $this->template->has_nocache_code; 
-    res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("<?php echo '<?xml';?>", $this->compiler, true));
-    $this->template->has_nocache_code = $save;
+template_element(res)::= XMLTAG(x). {
+    res = new Smarty_Internal_ParseTree_Text($this, x);
 }
 
                       // template text
 template_element(res)::= TEXT(o). {
-        if ($this->strip) {
-            res = new Smarty_Internal_ParseTree_Text($this, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', o));
+        if ($this->php_allow) {
+            res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode(o,true));
         } else {
-            res = new Smarty_Internal_ParseTree_Text($this, o);
+            if ($this->strip) {
+                res = new Smarty_Internal_ParseTree_Text($this, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', o));
+            } else {
+                res = new Smarty_Internal_ParseTree_Text($this, o);
+            }
         }
 }
 
@@ -505,8 +504,8 @@ smartytag(res)   ::= LDEL ID(i) modifierlist(l)attributes(a). {
         if (defined(i)) {
             res = $this->compiler->compileTag('private_print_expression',a,array('value'=>i, 'modifierlist'=>l));
         } else {
-            res = '<?php ob_start();?>'.$this->compiler->compileTag(i,a).'<?php echo ';
-            res .= $this->compiler->compileTag('private_modifier',array(),array('modifierlist'=>l,'value'=>'ob_get_clean()')).';?>';
+            res = "ob_start();\n".$this->compiler->compileTag(i,a).'echo ';
+            res .= $this->compiler->compileTag('private_modifier',array(),array('modifierlist'=>l,'value'=>'ob_get_clean()')).";\n";
         }
 }
 
@@ -517,8 +516,8 @@ smartytag(res)   ::= LDEL ID(i) PTR ID(m) attributes(a). {
 
                   // registered object tag with modifiers
 smartytag(res)   ::= LDEL ID(i) PTR ID(me) modifierlist(l) attributes(a). {
-    res = '<?php ob_start();?>'.$this->compiler->compileTag(i,a,array('object_method'=>me)).'<?php echo ';
-    res .= $this->compiler->compileTag('private_modifier',array(),array('modifierlist'=>l,'value'=>'ob_get_clean()')).';?>';
+    res = "ob_start();\n" .$this->compiler->compileTag(i,a,array('object_method'=>me)).'echo ';
+    res .= $this->compiler->compileTag('private_modifier',array(),array('modifierlist'=>l,'value'=>'ob_get_clean()')).";\n";
 }
 
                   // {if}, {elseif} and {while} tag
@@ -898,9 +897,9 @@ value(res)       ::= doublequoted_with_quotes(s). {
 value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
     self::$prefix_number++;
     if (vi['var'] == '\'smarty\'') {
-        $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).';?>';
+        $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).";\n";
     } else {
-        $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compileVariable(vi['var']).vi['smarty_internal_index'].';?>';
+        $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.' = '. $this->compileVariable(vi['var']).vi['smarty_internal_index'].";\n";
     }
     res = '$_tmp'.self::$prefix_number.'::'.r;
 
@@ -909,7 +908,7 @@ value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
                   // Smarty tag
 value(res)       ::= smartytag(st) RDEL. {
     self::$prefix_number++;
-    $this->compiler->prefix_code[] = '<?php ob_start();?>'.st.'<?php $_tmp'.self::$prefix_number.'=ob_get_clean();?>';
+    $this->compiler->prefix_code[] = "ob_start();\n".st.'$_tmp'.self::$prefix_number."=ob_get_clean();\n";
     res = '$_tmp'.self::$prefix_number;
 }
 
@@ -1153,7 +1152,7 @@ function(res)     ::= ns1(f) OPENP params(p) CLOSEP. {
                 $par = implode(',',p);
                 if (strncasecmp($par,'$_smarty_tpl->getConfigVariable',strlen('$_smarty_tpl->getConfigVariable')) === 0) {
                     self::$prefix_number++;
-                    $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.'='.str_replace(')',', false)',$par).';?>';
+                    $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.'='.str_replace(')',', false)',$par).";\n";
                     $isset_par = '$_tmp'.self::$prefix_number;
                 } else {
                     $isset_par=str_replace("')->value","',null,true,false)->value",$par);
@@ -1193,7 +1192,7 @@ method(res)     ::= DOLLAR ID(f) OPENP params(p) CLOSEP.  {
         $this->compiler->trigger_template_error (self::Err2);
     }
     self::$prefix_number++;
-    $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.'='.$this->compileVariable("'".f."'").';?>';
+    $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.'='.$this->compileVariable("'".f."'").";\n";
     res = '$_tmp'.self::$prefix_number.'('. implode(',',p) .')';
 }
 

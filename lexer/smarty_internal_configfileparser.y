@@ -80,7 +80,7 @@ class Smarty_Internal_Configfileparser
      *
      * @var array
      */
-    private static $escapes_single = Array('\\' => '\\',
+    private static $escapes_single = array('\\' => '\\',
                                            '\'' => '\'');
 
     /**
@@ -190,7 +190,7 @@ class Smarty_Internal_Configfileparser
      * @param array $var
      * @param array $target_array
      */
-    private function set_var(Array $var, Array &$target_array)
+    private function set_var(array $var, array &$target_array)
     {
         $key = $var["key"];
         $value = $var["value"];
@@ -208,10 +208,10 @@ class Smarty_Internal_Configfileparser
      *
      * @param array $vars
      */
-    private function add_global_vars(Array $vars)
+    private function add_global_vars(array $vars)
     {
         if (!isset($this->compiler->config_data['vars'])) {
-            $this->compiler->config_data['vars'] = Array();
+            $this->compiler->config_data['vars'] = array();
         }
         foreach ($vars as $var) {
             $this->set_var($var, $this->compiler->config_data);
@@ -224,10 +224,10 @@ class Smarty_Internal_Configfileparser
      * @param string $section_name
      * @param array  $vars
      */
-    private function add_section_vars($section_name, Array $vars)
+    private function add_section_vars($section_name, array $vars)
     {
         if (!isset($this->compiler->config_data['sections'][$section_name]['vars'])) {
-            $this->compiler->config_data['sections'][$section_name]['vars'] = Array();
+            $this->compiler->config_data['sections'][$section_name]['vars'] = array();
         }
         foreach ($vars as $var) {
             $this->set_var($var, $this->compiler->config_data['sections'][$section_name]);
@@ -295,17 +295,17 @@ var_list(res) ::= var_list(vl) newline. {
 }
 
 var_list(res) ::= var_list(vl) var(v). {
-    res = array_merge(vl, Array(v));
+    res = array_merge(vl, array(v));
 }
 
 var_list(res) ::= . {
-    res = Array();
+    res = array();
 }
 
 
 // Var
 var(res) ::= ID(id) EQUAL value(v). {
-    res = Array("key" => id, "value" => v);
+    res = array("key" => id, "value" => v);
 }
 
 

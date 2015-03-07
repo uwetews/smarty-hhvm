@@ -87,9 +87,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         // init the lexer/parser to compile the template
         $this->lex = new $this->lexer_class(str_replace(array("\r\n", "\r"), "\n", $_content), $this);
         $this->parser = new $this->parser_class($this->lex, $this);
-        if ($isTemplateSource) {
-            $this->parser->insertPhpCode("\$_smarty_tpl->properties['nocache_hash'] = '{$this->nocache_hash}';\n");
-        }
         if ($this->inheritance_child) {
             // start state on child templates
             $this->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBODY);
@@ -129,8 +126,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
             list($openTag, $_data) = array_pop($this->_tag_stack);
             $this->trigger_template_error("unclosed {$this->smarty->left_delimiter}" . $openTag . "{$this->smarty->right_delimiter} tag");
         }
-        // return compiled code
-        // return str_replace(array("? >\n<?php","? ><?php"), array('',''), $this->parser->retvalue);
         return $this->parser->retvalue;
     }
 }

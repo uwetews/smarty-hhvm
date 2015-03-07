@@ -212,7 +212,8 @@ class Smarty_Template_Cached
         if (!$this->processed) {
             $this->process($_template);
         }
-        return $_template->getRenderedTemplateCode();
+        $_template->getRenderedTemplateCode();
+        return;
     }
 
     /**
@@ -270,9 +271,9 @@ class Smarty_Template_Cached
     {
         $_template->properties['has_nocache_code'] = false;
         // get text between non-cached items
-        $cache_split = preg_split("!/\*%%SmartyNocache:{$_template->properties['nocache_hash']}%%\*\/(.+?)/\*/%%SmartyNocache:{$_template->properties['nocache_hash']}%%\*/!s", $content);
+        $cache_split = preg_split("!/\*%%SmartyNocache(.*)?%%\*\/(.+?)/\*/%%SmartyNocache(.*)?%%\*/!s", $content);
         // get non-cached items
-        preg_match_all("!/\*%%SmartyNocache:{$_template->properties['nocache_hash']}%%\*\/(.+?)/\*/%%SmartyNocache:{$_template->properties['nocache_hash']}%%\*/!s", $content, $cache_parts);
+        preg_match_all("!/\*%%SmartyNocache(.*)?%%\*\/(.+?)/\*/%%SmartyNocache(.*)?%%\*/!s", $content, $cache_parts);
         $output = '';
         // loop over items, stitch back together
         foreach ($cache_split as $curr_idx => $curr_split) {
@@ -280,7 +281,7 @@ class Smarty_Template_Cached
             $output .= "echo '" . addcslashes($curr_split, "\'")  . "';\n";
             if (isset($cache_parts[0][$curr_idx])) {
                 $_template->properties['has_nocache_code'] = true;
-                $output .= $cache_parts[1][$curr_idx];
+                $output .= $cache_parts[2][$curr_idx];
             }
         }
         if (!$no_output_filter && !$_template->has_nocache_code && (isset($_template->smarty->autoload_filters['output']) || isset($_template->smarty->registered_filters['output']))) {
@@ -298,6 +299,7 @@ class Smarty_Template_Cached
      *
      * @return bool
      */
+
     public function writeCachedContent(Smarty_Internal_Template $_template, $content)
     {
         if ($_template->source->recompiled || !($_template->caching == Smarty::CACHING_LIFETIME_CURRENT || $_template->caching == Smarty::CACHING_LIFETIME_SAVED)) {

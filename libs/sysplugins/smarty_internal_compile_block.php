@@ -167,7 +167,6 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         }
         $_tpl->tpl_vars = $compiler->template->tpl_vars;
         $_tpl->variable_filters = $compiler->template->variable_filters;
-        $_tpl->properties['nocache_hash'] = $compiler->template->properties['nocache_hash'];
         $_tpl->allow_relative_path = true;
         $_tpl->loadCompiler();
         $_tpl->compiler->inheritance = true;
@@ -388,7 +387,7 @@ class Smarty_Internal_Compile_Private_Child_Block extends Smarty_Internal_Compil
         }
         // source object
         unset ($compiler->template->source);
-        $exists = $compiler->template->source->exists;
+        $compiler->template->loadSource();
 
         // must merge includes
         if ($_attr['nocache'] == true) {
@@ -436,7 +435,7 @@ class Smarty_Internal_Compile_Private_Child_Blockclose extends Smarty_Internal_C
         $compiler->popTrace();
 
         $compiler->nocache = $saved_data[1];
-        $compiler->has_code = false;
+        $compiler->has_code = true;
 
         return true;
     }
