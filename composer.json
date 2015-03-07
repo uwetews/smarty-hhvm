@@ -1,5 +1,5 @@
 {
-    "name": "smarty/smarty",
+    "name": "uwetews/smarty-hhvm",
     "type": "library",
     "description": "Smarty - the compiling PHP template engine",
     "keywords": ["templating"],
