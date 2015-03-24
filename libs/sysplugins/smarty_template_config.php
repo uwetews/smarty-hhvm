@@ -108,12 +108,21 @@ class Smarty_Template_Config extends Smarty_Template_Source
             throw new SmartyException ("Unable to use resource '{$type}' for config");
         }
         $resource = Smarty_Resource::load($smarty, $type);
+        if ($smarty->resource_caching) {
+            $unique_resource = $resource->buildUniqueResourceName($smarty, $name, true);
+            if (isset($smarty->source_objects[$unique_resource])) {
+                return $smarty->source_objects[$unique_resource];
+            }
+        } else {
+            $unique_resource = null;
+        }
         $source = new Smarty_Template_Config($resource, $smarty, $template_resource, $type, $name);
         $resource->populate($source, $_template);
         if ((!isset($source->exists) || !$source->exists) && isset($_template->smarty->default_config_handler_func)) {
             Smarty_Internal_Extension_DefaultTemplateHandler::_getDefault($_template, $source);
         }
         $source->unique_resource = $resource->buildUniqueResourceName($smarty, $name, true);
+        $smarty->source_objects[$source->unique_resource] = $source;
         return $source;
     }
 }

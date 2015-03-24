@@ -10,6 +10,6 @@ class SmartyException extends Exception
 
     public function __toString()
     {
-        return ' --> Smarty: ' . (self::$escape ? htmlentities($this->message) : $this->message) . ' <-- ';
+        echo ' --> Smarty: ' . (self::$escape ? htmlentities($this->message) : $this->message) . ' <-- ';
     }
 }

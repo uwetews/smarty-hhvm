@@ -76,6 +76,21 @@ class Smarty_Template_Source
      * @var string
      */
     public $filepath = null;
+
+    /**
+     * Flag if source exists
+     *
+     * @var bool
+     */
+    public $exists = false;
+
+    /**
+     * Source timestamp
+     *
+     * @var int
+     */
+    public $timestamp = 0;
+
     /**
      * Source File Base name
      *
@@ -103,12 +118,31 @@ class Smarty_Template_Source
      * @var Smarty
      */
     public $smarty = null;
+
     /**
-     * Resource is source
+     * Resource is config file
      *
      * @var bool
      */
     public $isConfig = false;
+    /**
+     * Resource is inheritance child template
+     *
+     * @var bool
+     */
+    public $isChild = false;
+    /**
+     * Resource is relative to parent template
+     *
+     * @var bool
+     */
+    public $isRelative = false;
+    /**
+     * Resource class name
+     *
+     * @var null|string
+     */
+    public $resourceClass = null;
     /**
      * Source is bypassing compiler
      *
@@ -142,6 +176,7 @@ class Smarty_Template_Source
      */
     public function __construct(Smarty_Resource $handler, Smarty $smarty, $resource, $type, $name)
     {
+        $this->resourceClass = get_class($handler);
         $this->handler = $handler; // Note: prone to circular references
 
         $this->recompiled = $handler->recompiled;
@@ -205,6 +240,7 @@ class Smarty_Template_Source
                 $unique_resource = $resource->buildUniqueResourceName($smarty, $is_relative ? $source->filepath . $name : $name);
             }
             $source->unique_resource = $unique_resource;
+            $source->isRelative = $is_relative;
             // save in runtime cache if not relative
             if (!$is_relative) {
                 $smarty->source_objects[$unique_resource] = $source;
@@ -233,6 +269,17 @@ class Smarty_Template_Source
         }
     }
 
+    public function getResourceInfo($template) {
+    $info = array($this->filepath, $this->timestamp, $this->type, $this->name, $this->resourceClass,
+                 $this->unique_resource, $this->isRelative);
+        if (isset($template->compiled)) {
+            $info[] = $template->compiled->filepath;
+            $info[] = $template->compiled->timestamp;
+            $info[] = $template->compiled->cacheKey;
+            $info[] = $template->compile_id;
+        }
+        return $info;
+}
     /**
      * <<magic>> Generic Setter.
      *
@@ -245,8 +292,6 @@ class Smarty_Template_Source
     {
         switch ($property_name) {
             // regular attributes
-            case 'timestamp':
-            case 'exists':
             case 'content':
                 // required for extends: only
             case 'template':
@@ -269,12 +314,6 @@ class Smarty_Template_Source
     public function __get($property_name)
     {
         switch ($property_name) {
-            case 'timestamp':
-            case 'exists':
-                $this->handler->populateTimestamp($this);
-
-                return $this->$property_name;
-
             case 'content':
                 return $this->content = $this->handler->getContent($this);
 

@@ -79,7 +79,7 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      *
      * @return bool  true if compiling succeeded, false if it failed
      */
-    protected function doCompile($_content, $isTemplateSource = false)
+    protected function doCompile($_content)
     {
         /* here is where the compiling takes place. Smarty
           tags in the templates are replaces with PHP code,
@@ -87,10 +87,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         // init the lexer/parser to compile the template
         $this->lex = new $this->lexer_class(str_replace(array("\r\n", "\r"), "\n", $_content), $this);
         $this->parser = new $this->parser_class($this->lex, $this);
-        if ($this->inheritance_child) {
-            // start state on child templates
-            $this->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBODY);
-        }
         if (function_exists('mb_internal_encoding') && ((int) ini_get('mbstring.func_overload')) & 2) {
             $mbEncoding = mb_internal_encoding();
             mb_internal_encoding('ASCII');

@@ -18,7 +18,7 @@ class Smarty_Internal_Extension_Config
     {
         $smarty = isset($obj->smarty) ? $obj->smarty : $obj;
         $confObj = new $smarty->template_class($config_file, $smarty, $obj);
-        $confObj->buffer = new Smarty_Internal_Buffer();
+        $confObj->context = new Smarty_Internal_Context();
         $confObj->caching = Smarty::CACHING_OFF;
         $confObj->source = Smarty_Template_Config::load($confObj);
         $confObj->source->config_sections = $sections;
@@ -28,12 +28,14 @@ class Smarty_Internal_Extension_Config
             Smarty_Internal_Debug::start_render($confObj);
         }
         $confObj->compiled->render($confObj);
-        $confObj->buffer = null;
+        $confObj->context = null;
         if ($confObj->smarty->debugging) {
             Smarty_Internal_Debug::end_render($confObj);
         }
-        if ($obj instanceof Smarty_Internal_Template) {
-            $obj->properties['file_dependency'][$confObj->source->uid] = array($confObj->source->filepath, $confObj->source->timestamp, $confObj->source->type);
+        if ($obj instanceof Smarty_Internal_Template && isset($obj->context)) {
+            $obj->context->resourceInfo[$confObj->source->uid] = array($confObj->source->filepath, $confObj->source->timestamp, $confObj->source->type);
+        } else {
+            // TODO   config file dependency if loaded in Smarty, Data or Template object
         }
     }
 

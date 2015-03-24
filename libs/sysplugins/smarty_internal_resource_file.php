@@ -166,11 +166,10 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
             if (is_object($source->smarty->security_policy)) {
                 $source->smarty->security_policy->isTrustedResourceDir($source->filepath);
             }
-
+            $source->exists = true;
             $source->uid = sha1(getcwd() . $source->filepath);
-            if ($source->smarty->compile_check && !isset($source->timestamp)) {
-                $source->timestamp = @filemtime($source->filepath);
-                $source->exists = !!$source->timestamp;
+            if ($source->smarty->compile_check) {
+                $source->timestamp = filemtime($source->filepath);
             }
         } else {
             $source->timestamp = false;

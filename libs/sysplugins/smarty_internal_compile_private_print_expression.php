@@ -34,14 +34,14 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
     /**
      * Compiles code for generating output from any expression
      *
-     * @param array  $args      array with attributes from parser
-     * @param object $compiler  compiler object
-     * @param array  $parameter array with compilation parameter
+     * @param array                                 $args      array with attributes from parser
+     * @param \Smarty_Internal_TemplateCompilerBase $compiler  compiler object
+     * @param array                                 $parameter array with compilation parameter
      *
-     * @throws SmartyException
-     * @return string compiled code
+     * @return string
+     * @throws \SmartyException
      */
-    public function compile($args, $compiler, $parameter)
+    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -121,23 +121,24 @@ class Smarty_Internal_Compile_Private_Print_Expression extends Smarty_Internal_C
     }
 
     /**
-     * @param object $compiler compiler object
-     * @param string $name     name of variable filter
-     * @param string   $output   embedded output
+     * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
+     * @param string                                $name     name of variable filter
+     * @param string                                $output   embedded output
      *
      * @return string
+     * @throws \SmartyException
      */
-    private function compile_output_filter($compiler, $name, $output)
+    private function compile_output_filter(Smarty_Internal_TemplateCompilerBase $compiler, $name, $output)
     {
         $plugin_name = "smarty_variablefilter_{$name}";
         $path = $compiler->smarty->loadPlugin($plugin_name, false);
         if ($path) {
             if ($compiler->template->caching) {
-                $compiler->template->required_plugins['nocache'][$name][Smarty::FILTER_VARIABLE]['file'] = $path;
-                $compiler->template->required_plugins['nocache'][$name][Smarty::FILTER_VARIABLE]['function'] = $plugin_name;
+                $compiler->parent_compiler->nocachePlugins[$name][Smarty::FILTER_VARIABLE]['file'] = $path;
+                $compiler->parent_compiler->nocachePlugins[$name][Smarty::FILTER_VARIABLE]['function'] = $plugin_name;
             } else {
-                $compiler->template->required_plugins['compiled'][$name][Smarty::FILTER_VARIABLE]['file'] = $path;
-                $compiler->template->required_plugins['compiled'][$name][Smarty::FILTER_VARIABLE]['function'] = $plugin_name;
+                $compiler->parent_compiler->plugins[$name][Smarty::FILTER_VARIABLE]['file'] = $path;
+                $compiler->parent_compiler->plugins[$name][Smarty::FILTER_VARIABLE]['function'] = $plugin_name;
             }
         } else {
             // not found

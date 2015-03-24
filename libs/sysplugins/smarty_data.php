@@ -47,7 +47,7 @@ class Smarty_Data extends Smarty_Internal_Data
      *
      * @throws SmartyException
      */
-    public function __construct($_parent = null, Smarty_Internal_TemplateBase $smarty = null, $name = null)
+    public function __construct($_parent = null, Smarty $smarty = null, $name = null)
     {
         self::$count ++;
         $this->dataObjectName = 'Data_object ' . (isset($name) ? "'{$name}'" : self::$count);

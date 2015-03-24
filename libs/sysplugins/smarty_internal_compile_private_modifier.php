@@ -20,13 +20,15 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
     /**
      * Compiles code for modifier execution
      *
-     * @param  array  $args      array with attributes from parser
-     * @param  object $compiler  compiler object
-     * @param  array  $parameter array with compilation parameter
+     * @param  array                                       $args      array with attributes from parser
+     * @param \Smarty_Internal_TemplateCompilerBase $compiler  compiler object
+     * @param  array                                       $parameter array with compilation parameter
      *
      * @return string compiled code
+     * @throws \SmartyCompilerException
+     * @throws \SmartyException
      */
-    public function compile($args, $compiler, $parameter)
+    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter)
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -119,7 +121,7 @@ class Smarty_Internal_Compile_Private_Modifier extends Smarty_Internal_CompileBa
                                     }
                                 }
                             }
-                            if (isset($compiler->template->required_plugins['nocache'][$modifier][Smarty::PLUGIN_MODIFIER]['file']) || isset($compiler->template->required_plugins['compiled'][$modifier][Smarty::PLUGIN_MODIFIER]['file'])) {
+                            if (isset($compiler->parent_compiler->plugins[$modifier][Smarty::PLUGIN_MODIFIER]['file']) || isset($compiler->parent_compiler->nocachePlugins[$modifier][Smarty::PLUGIN_MODIFIER]['file'])) {
                                 // was a plugin
                                 $compiler->known_modifier_type[$modifier] = 4;
                             } else {

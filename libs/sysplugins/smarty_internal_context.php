@@ -15,7 +15,7 @@
  * @package    Smarty
  * @subpackage Template
  */
-class Smarty_Internal_Buffer
+class Smarty_Internal_Context
 {
 
     /**
@@ -23,7 +23,7 @@ class Smarty_Internal_Buffer
      *
      * @var string
      */
-    public $buffer = '';
+    public $content = '';
 
     /**
      * flag if buffer is used for cache file
@@ -53,6 +53,26 @@ class Smarty_Internal_Buffer
      */
     private $ob_level = 0;
 
+    public $hashedTemplates = array();
+
+    /**
+     * Source resource info
+     *
+     * @var array
+     */
+    public $resourceInfo = array();
+
+    /**
+     *
+     * @var array
+     */
+    public $templateFunctions = array();
+
+    public $inheritanceBlocks = array();
+    public $inheritanceStack = array();
+
+    public $inheritanceFlag = false;
+
     /**
      * Constructor
      *
@@ -74,15 +94,15 @@ class Smarty_Internal_Buffer
      *
      * @param string $code add raw text or nocache code to buffer
      */
-    public function toBufferCacheCode($code)
+    public function addCacheCode($code)
     {
         if (!empty($code)) {
             if (ob_get_length()) {
-                $this->buffer .= "echo '" . addcslashes(ob_get_clean(), '\'\\') . "';\n";
+                $this->content .= "echo '" . addcslashes(ob_get_clean(), '\'\\') . "';\n";
                 ob_start();
             }
             $this->hasNocacheCode = true;
-            $this->buffer .= $code;
+            $this->content .= $code;
         }
     }
 
@@ -106,9 +126,9 @@ class Smarty_Internal_Buffer
         if ($this->obActive) {
             if (false !== $code = ob_get_clean()) {
                 if ($this->caching) {
-                    $this->buffer .= "echo '" . addcslashes($code, '\'\\') . "';\n";
+                    $this->content .= "echo '" . addcslashes($code, '\'\\') . "';\n";
                 } else {
-                    $this->buffer .= $code;
+                    $this->content .= $code;
                 }
             }
             $this->obActive = false;
@@ -123,9 +143,9 @@ class Smarty_Internal_Buffer
         if ($this->obActive && ob_get_length()) {
             $code = ob_get_clean();
             if ($this->caching) {
-                $this->buffer .= "echo '" . addcslashes($code, '\'\\') . "';\n";
+                $this->content .= "echo '" . addcslashes($code, '\'\\') . "';\n";
             } else {
-                $this->buffer .= $code;
+                $this->content .= $code;
             }
             if ($restart) {
                 ob_start();
@@ -138,10 +158,10 @@ class Smarty_Internal_Buffer
      *
      * @return string
      */
-    public function getRawBuffer()
+    public function getContent()
     {
         $this->endBuffer();
-        return $this->buffer;
+        return $this->content;
     }
 
     /**

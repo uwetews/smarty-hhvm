@@ -91,7 +91,7 @@ class Smarty_Internal_Templateparser
      *
      * @var bool
      */
-    private $strip = false;
+    public $strip = false;
     /**
      * compiler object
      *
@@ -174,23 +174,6 @@ class Smarty_Internal_Templateparser
         $this->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($this, $code));
     }
 
-    /**
-     * compile variable
-     *
-     * @param string $variable
-     *
-     * @return string
-     */
-    public function compileVariable($variable)
-    {
-        if (strpos($variable, '(') == 0) {
-            // not a variable variable
-            $var = trim($variable, '\'');
-            $this->compiler->tag_nocache = $this->compiler->tag_nocache | $this->template->getVariable($var, null, true, false)->nocache;
-            $this->template->properties['variables'][$var] = $this->compiler->tag_nocache | $this->compiler->nocache;
-        }
-        return '$_smarty_tpl->tpl_vars[' . $variable . ']->value';
-    }
 }
 
 %token_prefix TP_
@@ -222,6 +205,7 @@ class Smarty_Internal_Templateparser
     // complete template
     //
 start(res)       ::= template. {
+    $this->compiler->processInheritance($this);
     res = $this->root_buffer->to_smarty_php();
 }
 
@@ -382,16 +366,22 @@ template_element(res)::= XMLTAG(x). {
 }
 
                       // template text
-template_element(res)::= TEXT(o). {
+template_element(res)::= TEXTI(o). {
         if ($this->php_allow) {
             res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode(o,true));
-        } else {
-            if ($this->strip) {
-                res = new Smarty_Internal_ParseTree_Text($this, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', o));
-            } else {
-                res = new Smarty_Internal_ParseTree_Text($this, o);
-            }
         }
+}
+
+template_element(res)::= text_content(t). {
+        res = $this->compiler->processText(t);
+}
+
+text_content(res) ::= TEXT(o). {
+    res = o;
+}
+
+text_content(res) ::= text_content(t) TEXT(o). {
+    res = t . o;
 }
 
                       // strip on
@@ -401,14 +391,6 @@ template_element ::= STRIPON(d). {
                       // strip off
 template_element ::= STRIPOFF(d). {
     $this->strip = false;
-}
-                      // process source of inheritance child block
-template_element ::= BLOCKSOURCE(s). {
-        if ($this->strip) {
-            SMARTY_INTERNAL_COMPILE_BLOCK::blockSource($this->compiler, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', s));
-        } else {
-            SMARTY_INTERNAL_COMPILE_BLOCK::blockSource($this->compiler, s);
-        }
 }
 
                     // Litteral
@@ -598,10 +580,10 @@ smartytag(res)   ::= LDEL SMARTYBLOCKCHILDPARENT(i). {
     $j = strrpos(i,'.');
     if (i[$j+1] == 'c') {
         // {$smarty.block.child}
-        res = SMARTY_INTERNAL_COMPILE_BLOCK::compileChildBlock($this->compiler);
+        res = Smarty_Internal_Compile_Block::compileChildBlock($this->compiler);
     } else {
         // {$smarty.block.parent}
-        res = SMARTY_INTERNAL_COMPILE_BLOCK::compileParentBlock($this->compiler);
+        res = Smarty_Internal_Compile_Block::compileParentBlock($this->compiler);
     }
 }
 
@@ -813,7 +795,7 @@ expr(res)        ::= variable(v1) INSTANCEOF(i) ns1(v2). {
 // ternary
 //
 ternary(res)        ::= OPENP expr(v) CLOSEP  QMARK DOLLAR ID(e1) COLON  expr(e2). {
-    res = v.' ? '. $this->compileVariable("'".e1."'") . ' : '.e2;
+    res = v.' ? '. $this->compiler->compileVariable("'".e1."'") . ' : '.e2;
 }
 
 ternary(res)        ::= OPENP expr(v) CLOSEP  QMARK  expr(e1) COLON  expr(e2). {
@@ -899,7 +881,7 @@ value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
     if (vi['var'] == '\'smarty\'') {
         $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).";\n";
     } else {
-        $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.' = '. $this->compileVariable(vi['var']).vi['smarty_internal_index'].";\n";
+        $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.' = '. $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'].";\n";
     }
     res = '$_tmp'.self::$prefix_number.'::'.r;
 
@@ -964,7 +946,7 @@ variable(res)    ::= varindexed(vi). {
         // used for array reset,next,prev,end,current 
         $this->last_variable = vi['var'];
         $this->last_index = vi['smarty_internal_index'];
-        res = $this->compileVariable(vi['var']).vi['smarty_internal_index'];
+        res = $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'];
     }
 }
 
@@ -1015,11 +997,11 @@ arrayindex        ::= . {
 // single index definition
                     // Smarty2 style index 
 indexdef(res)    ::= DOT DOLLAR varvar(v).  {
-    res = '['.$this->compileVariable(v).']';
+    res = '['.$this->compiler->compileVariable(v).']';
 }
 
 indexdef(res)    ::= DOT DOLLAR varvar(v) AT ID(p). {
-    res = '['.$this->compileVariable(v).'->'.p.']';
+    res = '['.$this->compiler->compileVariable(v).'->'.p.']';
 }
 
 indexdef(res)   ::= DOT ID(i). {
@@ -1089,7 +1071,7 @@ object(res)    ::= varindexed(vi) objectchain(oc). {
     if (vi['var'] == '\'smarty\'') {
         res =  $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).oc;
     } else {
-        res = $this->compileVariable(vi['var']).vi['smarty_internal_index'].oc;
+        res = $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'].oc;
     }
 }
 
@@ -1115,7 +1097,7 @@ objectelement(res)::= PTR DOLLAR varvar(v) arrayindex(a). {
     if ($this->security) {
         $this->compiler->trigger_template_error (self::Err2);
     }
-    res = '->{'.$this->compileVariable(v).a.'}';
+    res = '->{'.$this->compiler->compileVariable(v).a.'}';
 }
 
 objectelement(res)::= PTR LDEL expr(e) RDEL arrayindex(a). {
@@ -1192,7 +1174,7 @@ method(res)     ::= DOLLAR ID(f) OPENP params(p) CLOSEP.  {
         $this->compiler->trigger_template_error (self::Err2);
     }
     self::$prefix_number++;
-    $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.'='.$this->compileVariable("'".f."'").";\n";
+    $this->compiler->prefix_code[] = '$_tmp'.self::$prefix_number.'='.$this->compiler->compileVariable("'".f."'").";\n";
     res = '$_tmp'.self::$prefix_number.'('. implode(',',p) .')';
 }
 

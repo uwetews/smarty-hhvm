@@ -37,12 +37,14 @@ class Smarty_Internal_Extension_DefaultTemplateHandler
             $source->timestamp = @filemtime($_return);
             $source->exists = !!$source->timestamp;
             $source->filepath = $_return;
+            $source->type = 'file';
         } elseif ($_return === true) {
             $source->content = $_content;
             $source->timestamp = $_timestamp;
             $source->exists = true;
             $source->recompiled = true;
             $source->filepath = false;
+            $source->type = 'default';
         }
     }
 

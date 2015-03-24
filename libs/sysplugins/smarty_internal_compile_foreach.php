@@ -106,7 +106,7 @@ class Smarty_Internal_Compile_Foreach extends Smarty_Internal_CompileBase
         }
         $output .= " \$_from = $from; if (!is_array(\$_from) && !is_object(\$_from)) { settype(\$_from, 'array');}\n";
         if ($usesPropTotal) {
-            $output .= " \$_smarty_tpl->tpl_vars[$item]->total= \$_smarty_tpl->_count(\$_from);\n";
+            $output .= " \$_smarty_tpl->tpl_vars[$item]->total= \$this->_count(\$_from);\n";
         }
         if ($usesPropIteration) {
             $output .= " \$_smarty_tpl->tpl_vars[$item]->iteration=0;\n";

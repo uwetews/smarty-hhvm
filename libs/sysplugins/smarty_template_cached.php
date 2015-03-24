@@ -101,6 +101,16 @@ class Smarty_Template_Cached
     public $source = null;
 
     /**
+     * @var null| string
+     */
+    public $compiledClass = null;
+
+    /**
+     * @var null|
+     */
+    public $compiledTplObj = null;
+
+    /**
      * create Cached Object container
      *
      * @param Smarty_Internal_Template $_template template object
@@ -121,7 +131,7 @@ class Smarty_Template_Cached
     static function load(Smarty_Internal_Template $_template)
     {
         if (!isset($_template->source)) {
-            $_template->loadSource();
+            $_template->source = Smarty_Template_Source::load($_template);
         }
         $_template->cached = $cached = new Smarty_Template_Cached($_template);
 
@@ -174,7 +184,6 @@ class Smarty_Template_Cached
             }
             if (!$cached->valid && $_template->smarty->cache_locking) {
                 $cached->handler->acquireLock($_template->smarty, $cached);
-
                 return $cached;
             } else {
                 return $cached;
@@ -212,7 +221,7 @@ class Smarty_Template_Cached
         if (!$this->processed) {
             $this->process($_template);
         }
-        $_template->getRenderedTemplateCode();
+        $this->compiledTplObj->getRenderedTemplateCode($_template);
         return;
     }
 
@@ -259,57 +268,33 @@ class Smarty_Template_Cached
     }
 
     /**
-     * Sanitize content and write it to cache resource
-     *
-     * @param Smarty_Internal_Template $_template
-     * @param string                   $content
-     * @param bool                     $no_output_filter
-     *
-     * @throws SmartyException
-     */
-    public function updateCache(Smarty_Internal_Template $_template, $content, $no_output_filter)
-    {
-        $_template->properties['has_nocache_code'] = false;
-        // get text between non-cached items
-        $cache_split = preg_split("!/\*%%SmartyNocache(.*)?%%\*\/(.+?)/\*/%%SmartyNocache(.*)?%%\*/!s", $content);
-        // get non-cached items
-        preg_match_all("!/\*%%SmartyNocache(.*)?%%\*\/(.+?)/\*/%%SmartyNocache(.*)?%%\*/!s", $content, $cache_parts);
-        $output = '';
-        // loop over items, stitch back together
-        foreach ($cache_split as $curr_idx => $curr_split) {
-            // escape PHP tags in template content
-            $output .= "echo '" . addcslashes($curr_split, "\'")  . "';\n";
-            if (isset($cache_parts[0][$curr_idx])) {
-                $_template->properties['has_nocache_code'] = true;
-                $output .= $cache_parts[2][$curr_idx];
-            }
-        }
-        if (!$no_output_filter && !$_template->has_nocache_code && (isset($_template->smarty->autoload_filters['output']) || isset($_template->smarty->registered_filters['output']))) {
-            $output = Smarty_Internal_Filter_Handler::runFilter('output', $output, $_template);
-        }
-        // write cache file content
-        $this->writeCachedContent($_template, $output);
-    }
-
-    /**
      * Writes the content to cache resource
      *
      * @param Smarty_Internal_Template $_template
+     * @param \Smarty_Internal_Context $context
      * @param string                   $content
      *
      * @return bool
      */
-
-    public function writeCachedContent(Smarty_Internal_Template $_template, $content)
+    public function writeCachedContent(Smarty_Internal_Template $_template, Smarty_Internal_Context $context = null, $content = '')
     {
         if ($_template->source->recompiled || !($_template->caching == Smarty::CACHING_LIFETIME_CURRENT || $_template->caching == Smarty::CACHING_LIFETIME_SAVED)) {
             // don't write cache file
             return false;
         }
-        $_template->properties['cache_lifetime'] = $_template->cache_lifetime;
-        $_template->properties['unifunc'] = 'content_' . str_replace(array('.', ','), '_', uniqid('', true));
-        $content = Smarty_Internal_Extension_CodeFrame::create($_template, $content, '', true);
-        return $this->write($_template, $content);
+        $properties = array('isCache' => true, 'cacheLifetime' => $_template->cache_lifetime);
+        if ($context) {
+            $properties['resourceInfo'] = $context->resourceInfo;
+            if ($context->hasNocacheCode) {
+                $properties['hasNocacheCode'] = true;
+            }
+            foreach($context->templateFunctions as $name => $data) {
+                unset($data['obj']);
+                $properties['templateFunctions'][$name] = $data;
+            }
+            $content = !empty($content) ? $content : $context->getContent();
+        }
+        return $this->write($_template, Smarty_Internal_Extension_CodeFrame::create($_template, $properties, $content, '', true));
     }
 
     /**
@@ -320,7 +305,7 @@ class Smarty_Template_Cached
      */
     public function cacheModifiedCheck(Smarty_Internal_Template $_template, $content)
     {
-        $_isCached = $_template->isCached() && !$_template->has_nocache_code;
+        $_isCached = $this->valid && !$_template->context->hasNocacheCode;
         $_last_modified_date = @substr($_SERVER['HTTP_IF_MODIFIED_SINCE'], 0, strpos($_SERVER['HTTP_IF_MODIFIED_SINCE'], 'GMT') + 3);
         if ($_isCached && $this->timestamp <= strtotime($_last_modified_date)) {
             switch (PHP_SAPI) {
