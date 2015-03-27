@@ -53,7 +53,12 @@ class Smarty_Internal_Context
      */
     private $ob_level = 0;
 
-    public $hashedTemplates = array();
+    /**
+     * Array of processed templates
+     *
+     * @var array
+     */
+    public $processedTemplates = array();
 
     /**
      * Source resource info
@@ -63,14 +68,29 @@ class Smarty_Internal_Context
     public $resourceInfo = array();
 
     /**
+     * Array of nocache Plugins
+     *
+     * @var array
+     */
+    public $nocachePlugins = array();
+
+    /**
+     * Defined template functions
      *
      * @var array
      */
     public $templateFunctions = array();
 
+    /**
+     * Template inheritance block hierarchy
+     *
+     * @var array
+     */
     public $inheritanceBlocks = array();
-    public $inheritanceStack = array();
 
+    /**
+     * @var bool
+     */
     public $inheritanceFlag = false;
 
     /**

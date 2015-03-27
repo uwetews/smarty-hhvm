@@ -34,7 +34,7 @@ class Smarty_Internal_ParseTree_Tag extends Smarty_Internal_ParseTree
     public function __construct($parser, $data)
     {
         $this->parser = $parser;
-        $this->data = $data;
+        $this->data = $parser->compiler->removePhpTags($data);
         $this->saved_block_nesting = $parser->block_nesting_level;
     }
 

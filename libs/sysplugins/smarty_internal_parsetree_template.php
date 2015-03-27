@@ -80,13 +80,7 @@ class Smarty_Internal_ParseTree_Template extends Smarty_Internal_ParseTree
                     if ($this->subtrees[$key]->data == '') {
                         continue;
                     }
-                    $newCode = $this->subtrees[$key]->to_smarty_php();
-                    if ((preg_match('/^\s*<\?php\s+/', $newCode) && preg_match('/\s*\?>\s*$/', $subtree))) {
-                        $subtree = preg_replace('/\s*\?>\s*$/', "\n", $subtree);
-                        $subtree .= preg_replace('/^\s*<\?php\s+/', '', $newCode);
-                    } else {
-                        $subtree .= $newCode;
-                    }
+                    $subtree .= $this->subtrees[$key]->to_smarty_php();
                 }
                 if ($subtree == '') {
                     continue;

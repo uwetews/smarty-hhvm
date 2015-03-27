@@ -150,12 +150,12 @@ class Smarty_Internal_Extension_CodeFrame
                 switch ($id) {
                     case T_OPEN_TAG:
                     case T_OPEN_TAG_WITH_ECHO:
-                        $in_php = true;
-                        $result .= trim($text) . "\n";
+                        if (!$in_php) {
+                            $in_php = true;
+                            $result .= trim($text) . "\n";
+                        }
                         break;
                     case T_CLOSE_TAG:
-                        $in_php = false;
-                        $result .= trim($text);
                         break;
                     case T_OBJECT_OPERATOR:
                         $result .= trim($text);
@@ -172,12 +172,11 @@ class Smarty_Internal_Extension_CodeFrame
                             $result = rtrim($result) . ' ' . trim($text);
                         }
                         break;
-                    case T_ENCAPSED_AND_WHITESPACE:
+                    //case T_ENCAPSED_AND_WHITESPACE:
                     case T_WHITESPACE:
                         $result .= trim($text);
                         break;
                     case T_FUNCTION:
-                    case T_RETURN:
                     case T_ELSE:
                     case T_ELSEIF:
                         $result = rtrim($result) . ' ' . trim($text) . ' ';
@@ -214,6 +213,7 @@ class Smarty_Internal_Extension_CodeFrame
                     case T_START_HEREDOC:
                     case T_XOR_EQUAL:
                     case T_EXTENDS:
+                    case T_USE:
                     case T_INSTANCEOF:
                         $result = rtrim($result) . ' ' . trim($text) . ' ';
                         break;
@@ -227,20 +227,35 @@ class Smarty_Internal_Extension_CodeFrame
                     case T_PUBLIC:
                     case T_PRIVATE:
                     case T_PROTECTED:
+                    case T_ABSTRACT:
                     case T_STATIC:
                     case T_CLASS:
+                    case T_RETURN:
                     case T_ECHO:
-                        $result .= trim($text) . ' ';
+                    case T_BREAK:
+                    case T_TRY:
+                    case T_CATCH:
+                    case T_CLONE:
+                    case T_CONTINUE:
+                    case T_DO:
+                    case T_FOR:
+                    case T_FOREACH:
+                    case T_IF:
+                    case T_NEW:
+                    case T_SWITCH:
+                    case T_THROW:
+                    case T_WHILE:
+                    $result .= trim($text) . ' ';
                         break;
                     case T_ARRAY:
                         $isArray = true;
-                        $result .= $text;
+                        $result .= trim($text);
                         break;
                     case T_INLINE_HTML:
                         $result .= $text;
                         break;
                     default:
-                        $result .= trim($text);
+                        $result .= $text;
                         break;
                 } // switch($id) {
             } // if (is_string ($token)) {

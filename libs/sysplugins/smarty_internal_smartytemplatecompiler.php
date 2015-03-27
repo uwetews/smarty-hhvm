@@ -36,20 +36,6 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
     public $parser_class;
 
     /**
-     * Lexer object
-     *
-     * @var object
-     */
-    public $lex;
-
-    /**
-     * Parser object
-     *
-     * @var object
-     */
-    public $parser;
-
-    /**
      * array of vars which can be compiled in local scope
      *
      * @var array

@@ -292,6 +292,9 @@ class Smarty_Template_Cached
                 unset($data['obj']);
                 $properties['templateFunctions'][$name] = $data;
             }
+            if (!empty($context->nocachePlugins)) {
+                $properties['plugins'] = $context->nocachePlugins;
+            }
             $content = !empty($content) ? $content : $context->getContent();
         }
         return $this->write($_template, Smarty_Internal_Extension_CodeFrame::create($_template, $properties, $content, '', true));

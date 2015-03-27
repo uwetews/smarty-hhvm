@@ -44,17 +44,6 @@ class SmartyBC extends Smarty
      */
     public $_version = self::SMARTY_VERSION;
 
-    /**
-     * Initialize new SmartyBC object
-     *
-     * @param array $options options to set during initialization, e.g. array( 'forceCompile' => false )
-     */
-    public function __construct(array $options = array())
-    {
-        parent::__construct($options);
-        // register {php} tag
-        $this->registerPlugin('block', 'php', 'smarty_php_tag');
-    }
 
     /**
      * wrapper for assign_by_ref
@@ -449,19 +438,3 @@ class SmartyBC extends Smarty
     }
 }
 
-/**
- * Smarty {php}{/php} block function
- *
- * @param array   $params   parameter list
- * @param string  $content  contents of the block
- * @param object  $template template object
- * @param bool &$repeat  repeat flag
- *
- * @return string content re-formatted
- */
-function smarty_php_tag($params, $content, $template, &$repeat)
-{
-    eval($content);
-
-    return '';
-}

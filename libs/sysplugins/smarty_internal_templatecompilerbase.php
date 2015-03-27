@@ -23,6 +23,21 @@ abstract class Smarty_Internal_TemplateCompilerBase
      * @var Smarty
      */
     public $smarty = null;
+
+    /**
+     * Lexer object
+     *
+     * @var object
+     */
+    public $lex;
+
+    /**
+     * Parser object
+     *
+     * @var object
+     */
+    public $parser;
+
     /**
      * hash for nocache sections
      *
@@ -276,7 +291,18 @@ abstract class Smarty_Internal_TemplateCompilerBase
      */
     public $has_code = false;
 
+    /**
+     * Strip preg pattern
+     *
+     * @var string
+     */
     public $stripRegEx = '![\t ]*[\r\n]+[\t ]*!';
+
+    /**
+     * Saved file name of {extends} tag
+     *
+     * @var null
+     */
     public $extendsFileName = null;
 
     /**
@@ -323,13 +349,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
             $template_header .= "         compiled from \"" . $this->template->source->filepath . "\" */\n";
         }
 
-        if ($isExtendsResouce = !empty($this->template->source->components)) {
+        if ($isExtendsResource = !empty($this->template->source->components)) {
            // we have array of inheritance templates by extends: resource
             $this->sources = array_reverse($template->source->components);
         }
         // the $this->sources array can get additional elements while compiling by the {extends} tag
-        $_compiled_code = '';
-        if (!$isExtendsResouce) {
+        if (!$isExtendsResource) {
             $this->inheritance_child = $this->template->source->isChild;
             $this->smarty->_current_file = $this->template->source->filepath;
             if ($this->smarty->debugging) {
@@ -340,10 +365,9 @@ abstract class Smarty_Internal_TemplateCompilerBase
             }
         }
             do {
-                $_compiled_code = '';
                 // flag for aborting current and start recompile
                 $this->abort_and_recompile = false;
-                if ($isExtendsResouce) {
+                if ($isExtendsResource) {
                     $_content = '';
                 } else {
                     // get template source
@@ -489,11 +513,11 @@ abstract class Smarty_Internal_TemplateCompilerBase
                             }
                             $function = $this->smarty->registered_plugins[$plugin_type][$tag][0];
                             if (!is_array($function)) {
-                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $function($new_args, $this));
+                                return $function($new_args, $this);
                             } elseif (is_object($function[0])) {
-                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $this->smarty->registered_plugins[$plugin_type][$tag][0][0]->$function[1]($new_args, $this));
+                                return $this->smarty->registered_plugins[$plugin_type][$tag][0][0]->$function[1]($new_args, $this);
                             } else {
-                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', call_user_func_array($function, array($new_args, $this)));
+                                return call_user_func_array($function, array($new_args, $this));
                             }
                         }
                         // compile registered function or block function
@@ -517,12 +541,12 @@ abstract class Smarty_Internal_TemplateCompilerBase
                                 }
                             }
 
-                            return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin($new_args, $this->smarty));
+                            return $plugin($new_args, $this->smarty);
                         }
                         if (class_exists($plugin, false)) {
                             $plugin_object = new $plugin;
                             if (method_exists($plugin_object, 'compile')) {
-                                return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin_object->compile($args, $this));
+                                return $plugin_object->compile($args, $this);
                             }
                         }
                         throw new SmartyException("Plugin \"{$tag}\" not callable");
@@ -602,22 +626,22 @@ abstract class Smarty_Internal_TemplateCompilerBase
                     }
                     $function = $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0];
                     if (!is_array($function)) {
-                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $function($args, $this));
+                        return$function($args, $this);
                     } elseif (is_object($function[0])) {
-                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0][0]->$function[1]($args, $this));
+                        return $this->smarty->registered_plugins[Smarty::PLUGIN_COMPILER][$tag][0][0]->$function[1]($args, $this);
                     } else {
-                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', call_user_func_array($function, array($args, $this)));
+                        return call_user_func_array($function, array($args, $this));
                     }
                 }
                 if ($this->smarty->loadPlugin('smarty_compiler_' . $tag)) {
                     $plugin = 'smarty_compiler_' . $tag;
                     if (is_callable($plugin)) {
-                        return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin($args, $this->smarty));
+                        return $plugin($args, $this->smarty);
                     }
                     if (class_exists($plugin, false)) {
                         $plugin_object = new $plugin;
                         if (method_exists($plugin_object, 'compile')) {
-                            return preg_replace(array('#<\?php\s*#', '#\?>#'), '', $plugin_object->compile($args, $this));
+                            return $plugin_object->compile($args, $this);
                         }
                     }
                     throw new SmartyException("Plugin \"{$tag}\" not callable");
@@ -645,6 +669,15 @@ abstract class Smarty_Internal_TemplateCompilerBase
         return '$_smarty_tpl->tpl_vars[' . $variable . ']->value';
     }
 
+    /**
+     * This method is called from parser to process a text content section
+     * - remove text from inheritance child templates as they may generate output
+     * - strip text if strip is enabled
+     *
+     * @param string $text
+     *
+     * @return null|\Smarty_Internal_ParseTree_Text
+     */
     public function processText($text) {
         if ($this->inheritance_child && !$this->blockTagNestingLevel) {
             return null;
@@ -657,15 +690,25 @@ abstract class Smarty_Internal_TemplateCompilerBase
 
     }
 
+    /**
+     * Add code to call parent template on inheritance child templates
+     *
+     * @param $parser
+     *
+     * @throws \SmartyException
+     */
     public function processInheritance($parser) {
         if (isset($this->extendsFileName)) {
+            // child did use {extends}
             $name = $this->extendsFileName;
-            $parser->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($parser, $this->compileTag('include',array($name),array('isChild' => !empty($this->sources)))));
+            $this->extendsFileName = null;
+            $parser->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($parser, $this->compileTag('include',array($name, array('scope' => 'parent')),array('isChild' => !empty($this->sources)))));
         }
+        // template list of extends: resource ?
         while (!empty($this->sources)) {
             $this->inheritance_child = true;
             $source = array_shift($this->sources);
-            $parser->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($parser, $this->compileTag('include',array("'{$source->resource}'"),array('isChild' => !empty($this->sources)))));
+            $parser->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($parser, $this->compileTag('include',array("'{$source->resource}'", array('scope' => 'parent')),array('isChild' => !empty($this->sources)))));
         }
     }
 
@@ -825,6 +868,7 @@ abstract class Smarty_Internal_TemplateCompilerBase
     {
         // If the template is not evaluated and we have a nocache section and or a nocache tag
         if ($is_code && !empty($content)) {
+            $content = $this->removePhpTags($content);
             // generate replacement code
             if ((!($this->template->source->recompiled) || $this->forceNocache) && $this->template->caching && !$this->suppressNocacheProcessing &&
                 ($this->nocache || $this->tag_nocache)
@@ -861,6 +905,19 @@ abstract class Smarty_Internal_TemplateCompilerBase
         return "echo '/*%%SmartyNocache%%*/" . str_replace("^#^", "'", addcslashes($code, '\'\\')) . "/*/%%SmartyNocache%%*/';\n";
     }
 
+    /**
+     * Remove <?php ?> tags
+     *
+     * @param string $code
+     *
+     * @return string
+     */
+    public function removePhpTags ($code) {
+        if (false  === strpos($code,'<?php')) {
+            return $code;
+        }
+        return preg_replace('#(\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\')|("[^"\\\\]*(?:\\\\.[^"\\\\]*)*")|(<\?php\s+)|(\s*\?>)#', '$1$2', $code);
+    }
     /**
      *  push current file and line offset on stack for tracing {block} source lines
      *

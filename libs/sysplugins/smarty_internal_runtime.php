@@ -183,13 +183,16 @@ class Smarty_Internal_Runtime
                 $template->smarty->security_policy->startTemplate($this);
             }
             $context = $template->context;
-            if (isset($context->hashedTemplates[$this->hash])) {
-                $context->hashedTemplates[$this->hash] ++;
+            if (isset($context->processedTemplates[$this->hash])) {
+                $context->processedTemplates[$this->hash] ++;
             } else {
                 if ($this->isCache) {
                     $context->hasNocacheCode = $this->hasNocacheCode | $context->hasNocacheCode;
                 } else {
                     $context->resourceInfo = array_merge($context->resourceInfo, $this->resourceInfo);
+                    if (!empty($this->nocachePlugins)) {
+                        $context->nocachePlugins = array_merge($context->nocachePlugins, $this->nocachePlugins);
+                    }
                 }
                 if (isset($this->templateFunctions)) {
                     $functions = $this->templateFunctions;
@@ -198,7 +201,7 @@ class Smarty_Internal_Runtime
                         $context->templateFunctions[$name] = $param;
                     }
                 }
-                $context->hashedTemplates[$this->hash] = 1;
+                $context->processedTemplates[$this->hash] = 1;
             }
             if ($this->callCnt ++ == 2) {
                 $templateId = isset($template->templateId) ? $template->templateId : $template->smarty->getTemplateId($template->template_resource, $template->cache_id, $template->compile_id);
@@ -356,11 +359,11 @@ class Smarty_Internal_Runtime
     private function loadPlugins($plugins)
     {
         foreach ($plugins as $file => $function) {
-            if (!isset(self::$loadedPlugins[$function])) {
+            if (!isset(self::$loadedPlugins[$file])) {
                 if (is_file($file) && !is_callable($function)) {
                     include $file;
                 }
-                self::$loadedPlugins[$function] = true;
+                self::$loadedPlugins[$file] = true;
             }
         }
     }
